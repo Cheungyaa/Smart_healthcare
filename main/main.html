@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Life Log Dashboard</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+<div class="layout">
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span>Life Log Dashboard</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active">Dashboard</div>
+      <div class="nav-item">Sleep</div>
+      <div class="nav-item">Activity</div>
+      <div class="nav-item">Nutrition</div>
+      <div class="nav-item">Body Info</div>
+      <div class="nav-item">Settings</div>
+    </nav>
+    <div class="sidebar-bottom">
+      © 2025 Life Log
+    </div>
+  </aside>
+
+  <!-- 메인 -->
+  <main class="main">
+
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-title">Today Summary</div>
+      <div class="header-right">
+        <span>홍길동</span>
+        <div class="user-avatar"></div>
+        <div class="settings-icon"></div>
+      </div>
+    </header>
+
+    <!-- 상단 Today Summary 카드 -->
+    <section class="summary-section card">
+      <div class="summary-cards">
+        <div class="summary-card sleep">
+          <span class="label">수면 시간</span>
+          <span class="value">6h 40m</span>
+          <span class="label">목표 7h</span>
+        </div>
+        <div class="summary-card steps">
+          <span class="label">오늘 걸음 수</span>
+          <span class="value">8,240</span>
+          <span class="label">목표 10,000</span>
+        </div>
+        <div class="summary-card kcal">
+          <span class="label">섭취 칼로리</span>
+          <span class="value">1,850 kcal</span>
+          <span class="label">권장 2,200 kcal</span>
+        </div>
+        <div class="summary-card bpm">
+          <span class="label">평균 심박수</span>
+          <span class="value">76 bpm</span>
+          <span class="label">정상 범위</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 중단: 수면 & 활동, 칼로리/체중 -->
+    <section class="grid-2">
+      <!-- Sleep & Activity Chart -->
+      <div class="card">
+        <div class="card-title">수면 & 활동 추이 (최근 7일)</div>
+        <div class="chart-placeholder">
+          Line Chart Placeholder (sleep vs steps)
+        </div>
+      </div>
+
+      <!-- 칼로리 & 체중 -->
+      <div class="card">
+        <div class="card-title">칼로리 섭취</div>
+        <div>
+          <div style="font-size:18px; font-weight:600;">1,850 kcal</div>
+          <div class="subtext">권장 2,200 kcal</div>
+          <div class="calorie-bar">
+            <div class="calorie-bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-top:16px;">체중 추이</div>
+        <div class="chart-placeholder" style="height:80px;">
+          Weight / BMI Trend Placeholder
+        </div>
+      </div>
+    </section>
+
+    <!-- 하단: 또래 비교 -->
+    <section class="grid-2-bottom">
+      <!-- Peer Comparison -->
+      <div class="card">
+        <div class="card-title">
+          또래 평균 비교
+          <span class="tag">Age 20–24 · Male</span>
+        </div>
+        <table class="comparison-table">
+          <thead>
+          <tr>
+            <th>지표</th>
+            <th>나</th>
+            <th>또래 평균</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>수면 시간</td>
+            <td>6.7 h</td>
+            <td>7.1 h</td>
+          </tr>
+          <tr>
+            <td>걸음 수</td>
+            <td>8,240</td>
+            <td>9,500</td>
+          </tr>
+          <tr>
+            <td>BMI</td>
+            <td>23.1</td>
+            <td>22.4</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 메모 / 인사이트 영역 -->
+      <div class="card">
+        <div class="card-title">오늘의 인사이트</div>
+        <p class="subtext">
+          · 수면 시간이 또래보다 약간 부족합니다. 취침 시간을 20~30분 앞당기는 것을 권장합니다.<br>
+          · 칼로리 섭취는 권장량에 근접하며, 걸음 수는 평균 수준입니다.<br>
+          · 체중/BMI는 안정적인 범위에 있습니다.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
