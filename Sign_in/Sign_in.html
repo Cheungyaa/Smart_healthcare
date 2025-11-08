@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - Life Log Dashboard</title>
+    <link rel="stylesheet" href="Sign_in.css">
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-box">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>Life Log Dashboard</h1>
+            </div>
+            <form id="signup-form">
+                <div class="input-group">
+                    <label for="nickname">닉네임</label>
+                    <input type="text" id="nickname" name="nickname" required>
+                </div>
+                <div class="input-group">
+                    <label for="birthdate">생년월일</label>
+                    <input type="date" id="birthdate" name="birthdate" required>
+                    <span id="age-display" class="age-text"></span>
+                </div>
+                <div class="input-group">
+                    <label>성별</label>
+                    <div class="gender-options">
+                        <label><input type="radio" name="gender" value="male" required> 남성</label>
+                        <label><input type="radio" name="gender" value="female"> 여성</label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="userid">ID</label>
+                    <input type="text" id="userid" name="userid" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">회원가입</button>
+            </form>
+            <div class="links">
+                <span>이미 계정이 있으신가요? <a href="../log_in/login.html">로그인</a></span>
+            </div>
+        </div>
+    </div>
+    <script src="Sign_in.js"></script>
+</body>
+</html>

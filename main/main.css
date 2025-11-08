@@ -99,28 +99,6 @@ body {
   color: #111827;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  color: #4b5563;
-}
-
-.user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #9ca3af;
-}
-
-.settings-icon {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  border: 2px solid #9ca3af;
-}
-
 /* 카드 공통 */
 .card {
   background: #ffffff;
@@ -275,4 +253,72 @@ body {
   .grid-2-bottom {
     grid-template-columns: 1fr;
   }
+}
+
+/* --- Header User Area --- */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-buttons,
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info #username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- Button Styles --- */
+.btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #111827;
+  color: #ffffff;
+}
+.btn-primary:hover { background-color: #323f4b; }
+
+.btn-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+.btn-secondary:hover { background-color: #e5e7eb; }
+
+/* --- Login Prompt for Charts --- */
+.login-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 150px; /* chart-placeholder와 유사한 최소 높이 */
+}
+
+.login-prompt p {
+  font-size: 14px;
+  color: #6b7280;
 }

@@ -31,15 +31,23 @@
   <!-- 메인 -->
   <main class="main">
 
-    <!-- 헤더 -->
     <header class="header">
       <div class="header-title">Today Summary</div>
       <div class="header-right">
-        <span>홍길동</span>
-        <div class="user-avatar"></div>
-        <div class="settings-icon"></div>
+        <!-- 로그인 전 상태 -->
+        <div class="auth-buttons">
+          <button id="login-btn" class="btn btn-secondary">로그인</button>
+          <button id="signup-btn" class="btn btn-primary">회원가입</button>
+        </div>
+        <!-- 로그인 후 상태 (기본적으로 숨김) -->
+        <div class="user-info hidden">
+          <span id="username">홍길동</span>
+          <div class="user-avatar"></div>
+          <button id="logout-btn" class="btn btn-secondary">로그아웃</button>
+        </div>
       </div>
     </header>
+
 
     <!-- 상단 Today Summary 카드 -->
     <section class="summary-section card">
@@ -71,9 +79,14 @@
     <section class="grid-2">
       <!-- Sleep & Activity Chart -->
       <div class="card">
-        <div class="card-title">수면 & 활동 추이 (최근 7일)</div>
-        <div class="chart-placeholder">
-          Line Chart Placeholder (sleep vs steps)
+        <!-- 로그인 후 상태 (기본적으로 숨김) -->
+        <div class="chart-content hidden">
+          <div class="card-title">수면 & 활동 추이 (최근 7일)</div>
+          <div class="chart-placeholder"></div>
+        </div>
+        <!-- 로그인 전 상태 -->
+        <div class="login-prompt">
+          <p>데이터를 보려면 로그인이 필요합니다.</p>
         </div>
       </div>
 

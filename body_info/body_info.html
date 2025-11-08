@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신체 정보 입력 - Life Log Dashboard</title>
+    <link rel="stylesheet" href="body_info.css">
+</head>
+<body>
+    <div class="body-info-container">
+        <div class="body-info-box">
+            <div class="progress-indicator">
+                <h2>추가 정보 입력</h2>
+                <p>더 정확한 분석을 위해 추가 정보를 입력해주세요.</p>
+            </div>
+            <form id="body-info-form">
+                <div class="input-group">
+                    <label for="weight">체중 (kg)</label>
+                    <input type="number" id="weight" name="weight" placeholder="예: 70.5" step="0.1" required>
+                </div>
+                <div class="input-group">
+                    <label for="height">키 (cm)</label>
+                    <input type="number" id="height" name="height" placeholder="예: 175" required>
+                </div>
+                <div class="input-group">
+                    <label for="blood_pressure">혈압 (mmHg)</label>
+                    <input type="text" id="blood_pressure" name="blood_pressure" placeholder="예: 120/80" required>
+                </div>
+                <div class="input-group">
+                    <label for="activity_factor">활동 수준</label>
+                    <select id="activity_factor" name="activity_factor" required>
+                        <option value="" disabled selected>활동 수준을 선택하세요</option>
+                        <option value="1.2">거의 활동 없음</option>
+                        <option value="1.375">가벼운 활동 (주 1-3일)</option>
+                        <option value="1.55">중간 활동 (주 3-5일)</option>
+                        <option value="1.725">높은 활동 (주 6-7일)</option>
+                        <option value="1.9">매우 높은 활동 (매일, 고강도)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">저장하고 시작하기</button>
+            </form>
+            <div class="links">
+                <a href="../main/main.html">건너뛰기</a>
+            </div>
+        </div>
+    </div>
+    <script src="body_info.js"></script>
+</body>
+</html>
