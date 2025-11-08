@@ -8,22 +8,26 @@
 body {
   background: #eef2f7;
   color: #222;
+  font-size: 1rem; /* 기본 폰트 */
 }
 
 .layout {
   display: flex;
   min-height: 100vh;
+  max-width: 1200px; /* 화면 너무 넓어지지 않게 제한 */
+  margin: 0 auto; /* 중앙 정렬 */
 }
 
 /* 사이드바 */
 .sidebar {
-  width: 220px;
+  width: 18rem; /* 220px → 18rem */
   background: #1f2933;
   color: #cfd8e3;
-  padding: 24px 16px;
+  padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1.5rem;
+  flex-shrink: 0; /* 확대 시 사이드바 폭 유지 */
 }
 
 .logo {
@@ -120,9 +124,9 @@ body {
 /* 카드 공통 */
 .card {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 16px 18px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.06);
 }
 
 /* Today Summary 영역 */
@@ -134,8 +138,8 @@ body {
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
 }
 
 .summary-card {
@@ -249,24 +253,20 @@ body {
 }
 
 /* 반응형 */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .layout {
     flex-direction: column;
+    max-width: 100%;
   }
   .sidebar {
-    flex-direction: row;
     width: 100%;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
+    flex-direction: row;
+    justify-content: space-around;
   }
   .nav {
     flex-direction: row;
     flex-wrap: wrap;
     margin-top: 0;
-  }
-  .main {
-    padding: 16px;
   }
   .summary-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
