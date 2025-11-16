@@ -1,0 +1,10 @@
+#!/bin/sh
+'''exec' "/Users/imhyeongtaeg/Library/Mobile Documents/com~apple~CloudDocs/2025-2/데이터베이스/프로젝트/Smart_healthcare/.venv/bin/python3.11" "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+from pip._internal.cli.main import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())

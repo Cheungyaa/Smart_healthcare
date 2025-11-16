@@ -17,10 +17,12 @@ class SignServer:
         @self.app.post("/SignUp")
         def signUp():
             data = request.json
-            name, birth, age, gender, id, pw, email = (
+            name, birth, age, gender_str, id, pw, email = (
                 data.get("name"), data.get("birth"), data.get("age"), 
                 data.get("gender"), data.get("id"), data.get("pw"), data.get("email")
             )
+            
+            gender = 1 if gender_str == "male" else 0
             
             db = DB()
             flag = db.signUp(name, birth, age, gender, id, pw, email)

@@ -1,4 +1,4 @@
-import URL from "./main/config.js"
+const URL = "http://htaeky.iptime.org:7002";
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
@@ -18,8 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({id: username, pw: password})
-        })
-        const msg = await res.JSON().get("message");
+        });
+
+        // 응답 JSON 파싱
+        const data = await res.json();
+        const msg = data.message;
 
         // 로그인 성공 시 대시보드 페이지로 이동
         if (msg == "success") {
@@ -28,6 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         else {
             alert("ID 또는 비밀번호가 일치하지 않습니다"); // 경고 메세지 출력
-        } 
+        }
     });
 });

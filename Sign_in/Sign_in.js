@@ -1,4 +1,4 @@
-import URL from "./main/config.js"
+const URL = "http://htaeky.iptime.org:7002";
 
 document.addEventListener("DOMContentLoaded", () => {
     const signupForm = document.getElementById("signup-form");
@@ -53,15 +53,23 @@ document.addEventListener("DOMContentLoaded", () => {
         // 서버에 회원가입 요청
         // 성공 시 {"message": "success"} json 객체 전송
         // 실패 시 {"message": "fail"} json 객체 전송 : 이미 id가 존재할 경우 실패
-        const res = await fetch(URL+"/SignUp", {
+        const res = await fetch(URL + "/SignUp", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                name: nickname, birth: birthdate, age: calculatedAge, 
-                gender: gender, id: userid, pw: password, email: email
+                name: nickname,
+                birth: birthdate,
+                age: calculatedAge,
+                gender: gender,
+                id: userid,
+                pw: password,
+                email: email
             })
-        })
-        const msg = await res.JSON().get("message");
+        });
+
+        // 응답 JSON 파싱
+        const data = await res.json();
+        const msg = data.message;
 
         // 다음 화면으로 변경
         if (msg == "success") {

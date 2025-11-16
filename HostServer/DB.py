@@ -4,7 +4,7 @@ from datetime import datetime
 class DB :
     id = "user1"
     pw = "00000000"
-    dsn = ""
+    dsn = "htaeky.iptime.org:7000/FREEPDB1"
     
     def __init__(self):
         self.connect = oracledb.connect(user = DB.id, password = DB.pw, dsn = DB.dsn)
@@ -22,7 +22,7 @@ class DB :
         """, {"id": id})
         temp = self.cur.fetchone()
         
-        if not temp :
+        if temp :
             return False
         
         birth = datetime.strptime(birth_str, "%Y-%m-%d").date()
@@ -33,13 +33,13 @@ class DB :
             """, {"id": id, "pw": pw, "name": name, "email": email}
         )
         
-        self.cur.execute("""
-            INSERT INTO Body_info (user_id, gender, age, birth)
-            VALUES (:id, :gender, :age, :birth)
-            """, {"id": id, "gender": gender, "age": age, "birth": birth}
-        )
+        # self.cur.execute("""
+        #     INSERT INTO Body_info (user_id, gender, age, birth)
+        #     VALUES (:id, :gender, :age, :birth)
+        #     """, {"id": id, "gender": gender, "age": age, "birth": birth}
+        # )
         
-        self.cur.commit()
+        self.connect.commit()
         return True
     
     def logIn(self, id, pw) :
