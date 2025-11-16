@@ -1,0 +1,12 @@
+프론트 서버 주소: http://htaeky.iptime.org:7009/main/main.html
+DB 주소: "htaeky.iptime.org:7000/FREEPDB1"
+API 서버 주소: http://htaeky.iptime.org:7002
+
+// Front
+docker build -t htaeky/smart_healthcare_front:latest .   
+docker push htaeky/smart_healthcare_front:latest
+
+
+// Back 
+docker build -t htaeky/smart_healthcare:latest . 
+docker push htaeky/smart_healthcare:latest

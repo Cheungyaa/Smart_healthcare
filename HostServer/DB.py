@@ -4,7 +4,7 @@ from datetime import datetime
 class DB :
     id = "user1"
     pw = "00000000"
-    dsn = ""
+    dsn = "htaeky.iptime.org:7000/FREEPDB1"
     
     def __init__(self):
         self.connect = oracledb.connect(user = DB.id, password = DB.pw, dsn = DB.dsn)

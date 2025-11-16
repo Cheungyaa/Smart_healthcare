@@ -1,0 +1,9 @@
+#!/bin/sh
+'''exec' "/Users/imhyeongtaeg/Library/Mobile Documents/com~apple~CloudDocs/2025-2/데이터베이스/프로젝트/Smart_healthcare/.venv/bin/python" "$0" "$@"
+' '''
+import sys
+from flask.cli import main
+if __name__ == '__main__':
+    if sys.argv[0].endswith('.exe'):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(main())
