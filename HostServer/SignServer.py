@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 from DB import DB
 
 class SignServer:
@@ -10,7 +9,7 @@ class SignServer:
         self.add_routes()
         self.app.run(host="0.0.0.0", port=7002)
 
-    def add_routes(self) :
+    def add_routes(self):
         @self.app.get("/test")
         def test():
             return jsonify({"message": "Server is connected"})
@@ -37,6 +36,3 @@ class SignServer:
             flag = db.logIn(id, pw)
             db.close()
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
-            
-    
-    
