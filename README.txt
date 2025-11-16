@@ -1,66 +1,99 @@
-HostServer/DB.py <- dsn에 db 주소 입력
-main/config.js <- 로컬 주소로 테스트하거나, api서버 주소 입력
-** 테스트 할 땐 주소 쓰고, 깃허브에 업로드할 땐 서버 주소 올리지 마셈 **
+# 📊 Smart Health Log Project
 
+건강 데이터를 기록하고 분석하는 **스마트 헬스케어 웹 프로젝트**입니다.
 
-====== 테이블 구조 ======
-CREATE TABLE "User" (
-    user_id VARCHAR2(255) PRIMARY KEY,
-    user_password VARCHAR2(255),
-    user_name VARCHAR2(255),
-    email VARCHAR2(255)
-);
+## 📁 프로젝트 구조
 
-CREATE TABLE Life_log (
-    user_id VARCHAR2(255),
-    actual_start_sleep_time TIMESTAMP,
-    actual_end_sleep_time TIMESTAMP,
-    actual_sleep_time INTERVAL DAY TO SECOND,
-    target_sleep_time INTERVAL DAY TO SECOND,
-    steps NUMBER,
-    heart_rate NUMBER,
-    recorded_at TIMESTAMP,
-    CONSTRAINT pk_life_log PRIMARY KEY (user_id, recorded_at),
-    CONSTRAINT fk_life_user FOREIGN KEY (user_id) REFERENCES "User"(user_id)
-);
+- **HostServer/DB.py**
+  - 🗄️ `dsn`에 DB 주소 입력
+- **main/config.js**
+  - 🧪 테스트 시 로컬 주소 사용
+  - 🌐 실제 서비스 시 API 서버 주소 입력
+- ⚠️ **주의: 테스트할 땐 주소 넣고, GitHub에 올릴 때 서버 주소는 제외하세요!**
 
-CREATE TABLE Body_info (
-    user_id VARCHAR2(255),
-    gender NUMBER(1),  -- 0: female, 1: male
-    age NUMBER,
-    birth TIMESTAMP,
-    weight NUMBER,
-    height NUMBER,
-    bmi NUMBER,
-    blood_pressure NUMBER,
-    activity_factor NUMBER,
-    recorded_at TIMESTAMP,
-    CONSTRAINT pk_body_info PRIMARY KEY (user_id, recorded_at),
-    CONSTRAINT fk_body_user FOREIGN KEY (user_id) REFERENCES "User"(user_id)
-);
+---
 
-CREATE TABLE Food (
-    food_name VARCHAR2(255) PRIMARY KEY,
-    calories_per_gram NUMBER
-);
+## 📋 데이터베이스 테이블 구조
 
-CREATE TABLE Food_log (
-    user_id VARCHAR2(255),
-    food_name VARCHAR2(255),
-    food_weight NUMBER,
-    food_calories NUMBER,
-    recorded_at TIMESTAMP,
-    CONSTRAINT pk_food_log PRIMARY KEY (user_id, recorded_at),
-    CONSTRAINT fk_foodlog_user FOREIGN KEY (user_id) REFERENCES "User"(user_id),
-    CONSTRAINT fk_foodlog_food FOREIGN KEY (food_name) REFERENCES Food(food_name)
-);
+### 👤 User
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | PK |
+| `user_password` | VARCHAR2(255) | 🔐 해시된 비밀번호 저장 |
+| `user_name` | VARCHAR2(255) | 사용자 이름 |
+| `email` | VARCHAR2(255) | 이메일 |
 
-CREATE TABLE Average_by_age_gender (
-    age_group NUMBER,
-    gender NUMBER(1),  -- 0: female, 1: male
-    avg_sleep_time INTERVAL DAY TO SECOND,
-    avg_steps NUMBER,
-    avg_weight NUMBER,
-    avg_height NUMBER,
-    CONSTRAINT pk_avg_age_gender PRIMARY KEY (age_group, gender)
-);
+---
+
+### 🛌 Life_log
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
+| `actual_start_sleep_time` | TIMESTAMP | 실제 수면 시작 |
+| `actual_end_sleep_time` | TIMESTAMP | 실제 수면 종료 |
+| `actual_sleep_time` | INTERVAL | 실제 수면 시간 |
+| `target_sleep_time` | INTERVAL | 목표 수면 시간 |
+| `steps` | NUMBER | 걸음 수 👣 |
+| `heart_rate` | NUMBER | 심박수 ❤️ |
+| `recorded_at` | TIMESTAMP | 기록 시간 |
+| **PK** | `(user_id, recorded_at)` |
+
+---
+
+### 🧍 Body_info
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
+| `gender` | NUMBER(1) | 0: 여성 🚺 / 1: 남성 🚹 |
+| `age` | NUMBER | 나이 |
+| `birth` | TIMESTAMP | 생년월일 🎂 |
+| `weight` | NUMBER | 체중 ⚖️ |
+| `height` | NUMBER | 키 📏 |
+| `bmi` | NUMBER | BMI |
+| `blood_pressure` | NUMBER | 혈압 |
+| `activity_factor` | NUMBER | 활동 지수 🏃 |
+| `recorded_at` | TIMESTAMP | 기록 시간 |
+| **PK** | `(user_id, recorded_at)` |
+
+---
+
+### 🍽️ Food
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `food_name` | VARCHAR2(255) | PK - 음식 이름 |
+| `calories_per_gram` | NUMBER | g당 칼로리 🔥 |
+
+---
+
+### 🗒️ Food_log
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
+| `food_name` | VARCHAR2(255) | FK → Food |
+| `food_weight` | NUMBER | 섭취량 (g) |
+| `food_calories` | NUMBER | 칼로리 총량 |
+| `recorded_at` | TIMESTAMP | 기록 시간 |
+| **PK** | `(user_id, recorded_at)` |
+
+---
+
+### 📈 Average_by_age_gender
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `age_group` | NUMBER | 연령대 |
+| `gender` | NUMBER(1) | 0: 여성 🚺 / 1: 남성 🚹 |
+| `avg_sleep_time` | INTERVAL | 평균 수면 시간 😴 |
+| `avg_steps` | NUMBER | 평균 걸음 수 👟 |
+| `avg_weight` | NUMBER | 평균 체중 ⚖️ |
+| `avg_height` | NUMBER | 평균 키 📏 |
+| **PK** | `(age_group, gender)` |
+
+---
+
+## 📌 추가 안내
+- ⚠️ 실제 서비스 환경에서는 개인 정보 및 민감 데이터 보호에 **유의**해야 합니다.
+- 🔐 비밀번호는 **해시값으로 저장**해야 합니다.
+
+---
+
+💡 **문의나 제안**은 언제든지 Issue 또는 PR로 남겨주세요 🙂
