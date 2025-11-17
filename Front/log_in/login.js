@@ -26,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 로그인 성공 시 대시보드 페이지로 이동
         if (msg == "success") {
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("username", username);
             alert("로그인에 성공했습니다!");
             window.location.href = "../main/main.html"; // log_in -> main 폴더로 이동} // 다음 화면으로 변경
         }
