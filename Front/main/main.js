@@ -332,182 +332,45 @@ loadTodayData();
 updateDashboard();
 
 document.addEventListener('DOMContentLoaded', () => {
-  const nav = document.querySelector('.nav');
-  const container = document.getElementById('content-container');
-  if (!container) return;
+  // loadPage가 아직 내부에서 정의되어 있을 수 있어서 폴링으로 기다립니다.
+  const waitForLoadPage = () => {
+    if (typeof loadPage === 'function') {
+      // 전역에서 호출 가능하게 노출 (안정성)
+      window.loadPage = loadPage;
 
-  // 데이터 스토어 (localStorage 사용)
-  const dataStore = {
-    today: {
-      sleep: { hours: 0, minutes: 0 },
-      steps: 0,
-      kcal: 0,
-      bpm: 0,
-      bmi: 0
+      const nav = document.querySelector('.nav');
+      if (!nav) {
+        console.error('[nav bind] .nav 요소 없음');
+        return;
+      }
+      if (nav.dataset._bound === '1') {
+        console.log('[nav bind] 이미 바인딩됨');
+        return;
+      }
+      nav.dataset._bound = '1';
+
+      // 이벤트 위임 한 번만 바인딩
+      nav.addEventListener('click', (e) => {
+        const item = e.target.closest('.nav-item');
+        if (!item) return;
+        console.log('NAV CLICK ->', item.dataset.page || item.textContent.trim());
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        // loadPage 호출 (같은 스코프의 loadPage 호출)
+        try {
+          loadPage(item.dataset.page || item.textContent.trim().toLowerCase());
+        } catch (err) {
+          console.error('loadPage 호출 실패', err);
+        }
+      }, { passive: true });
+
+      console.log('[nav bind] 완료');
+    } else {
+      // 50ms 후 재시도
+      setTimeout(waitForLoadPage, 50);
     }
   };
 
-  function loadTodayData() {
-    const saved = localStorage.getItem('todayData');
-    if (saved) {
-      try { Object.assign(dataStore.today, JSON.parse(saved)); }
-      catch(e){ console.warn('todayData parse error', e); }
-    }
-  }
-  function saveTodayData() { localStorage.setItem('todayData', JSON.stringify(dataStore.today)); }
-
-  // Dashboard 업데이트 (id가 있는 요소들만 업데이트)
-  function updateDashboard() {
-    loadTodayData();
-    const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-    setText('today-sleep', `${dataStore.today.sleep.hours}h ${dataStore.today.sleep.minutes}m`);
-    setText('today-steps', Number(dataStore.today.steps).toLocaleString());
-    setText('today-kcal', `${dataStore.today.kcal} kcal`);
-    setText('today-bpm', `${dataStore.today.bpm} bpm`);
-    setText('peer-my-sleep', `${dataStore.today.sleep.hours}h`);
-    setText('peer-my-steps', Number(dataStore.today.steps).toLocaleString());
-    setText('peer-my-bmi', dataStore.today.bmi || '0');
-
-    const elCalBar = document.getElementById('calorie-bar-fill');
-    if (elCalBar) {
-      const percent = Math.min(Math.round((dataStore.today.kcal / 2200) * 100), 100);
-      elCalBar.style.width = percent + '%';
-    }
-
-    // 인사이트 생성
-    const insightEl = document.getElementById('insight-text');
-    if (insightEl) {
-      const insights = [];
-      const sleepTotal = (Number(dataStore.today.sleep.hours)||0) + ((Number(dataStore.today.sleep.minutes)||0)/60);
-      if (sleepTotal < 6.5) insights.push('수면 시간이 또래보다 부족합니다. 취침 시간을 20~30분 앞당기는 것을 권장합니다.');
-      else if (sleepTotal < 7) insights.push('수면 시간이 약간 부족합니다. 수면 시간을 조금 늘려보세요.');
-      else insights.push('수면 시간이 양호합니다. 충분한 수면을 유지하세요.');
-
-      const steps = Number(dataStore.today.steps) || 0;
-      if (steps < 5000) insights.push('오늘 걸음 수가 낮습니다. 가벼운 산책을 권장합니다.');
-      else if (steps < 10000) insights.push('활동량이 보통입니다. 목표 걸음 수 달성을 시도해 보세요.');
-      else insights.push('우와! 오늘 걸음 수 목표를 달성했습니다. 계속 유지하세요.');
-
-      const kcal = Number(dataStore.today.kcal) || 0;
-      if (kcal > 2600) insights.push('칼로리 섭취가 권장량을 초과했습니다. 섭취량을 조절하세요.');
-      else if (kcal > 2200) insights.push('칼로리 섭취가 권장량에 근접합니다. 균형 있게 유지하세요.');
-      else insights.push('칼로리 섭취가 적절합니다.');
-
-      const bpm = Number(dataStore.today.bpm) || 0;
-      if (bpm && (bpm < 50 || bpm > 100)) insights.push('심박수 범위가 평소와 다릅니다. 필요 시 전문가와 상담하세요.');
-      else if (bpm) insights.push('심박수는 정상 범위 내에 있습니다.');
-
-      insightEl.innerHTML = insights.map(s => `· ${s}`).join('<br>');
-    }
-  }
-
-  // 페이지 렌더 (간단한 form 렌더링)
-  function loadPage(page) {
-    const protectedPages = ['sleep','activity','nutrition','body-info'];
-    // 로그인 제한은 main.html의 로그인 로직에 따름
-    if (!page || page === 'dashboard') {
-      // 원래 대시보드 HTML이 content-container에 이미 있으므로 단순 업데이트
-      updateDashboard();
-      return;
-    }
-
-    loadTodayData();
-    if (page === 'sleep') {
-      const { hours, minutes } = dataStore.today.sleep;
-      container.innerHTML = `
-        <section class="card">
-          <div class="card-title">Sleep</div>
-          <div style="padding:16px;">
-            <label>시간(시):</label><br/><input id="sleep-hours" type="number" value="${hours}" min="0" max="24"/><br/>
-            <label>분:</label><br/><input id="sleep-minutes" type="number" value="${minutes}" min="0" max="59"/><br/>
-            <button id="save-sleep">저장</button>
-            <button id="cancel">취소</button>
-          </div>
-        </section>`;
-      document.getElementById('save-sleep').addEventListener('click', () => {
-        dataStore.today.sleep.hours = parseInt(document.getElementById('sleep-hours').value) || 0;
-        dataStore.today.sleep.minutes = parseInt(document.getElementById('sleep-minutes').value) || 0;
-        saveTodayData(); updateDashboard(); loadPage('dashboard');
-      });
-      document.getElementById('cancel').addEventListener('click', () => loadPage('dashboard'));
-      return;
-    }
-
-    if (page === 'activity') {
-      container.innerHTML = `
-        <section class="card">
-          <div class="card-title">Activity</div>
-          <div style="padding:16px;">
-            <label>걸음 수:</label><br/><input id="activity-steps" type="number" value="${dataStore.today.steps||0}" min="0"/><br/>
-            <button id="save-act">저장</button><button id="cancel-act">취소</button>
-          </div>
-        </section>`;
-      document.getElementById('save-act').addEventListener('click', () => {
-        dataStore.today.steps = parseInt(document.getElementById('activity-steps').value) || 0;
-        saveTodayData(); updateDashboard(); loadPage('dashboard');
-      });
-      document.getElementById('cancel-act').addEventListener('click', () => loadPage('dashboard'));
-      return;
-    }
-
-    if (page === 'nutrition') {
-      container.innerHTML = `
-        <section class="card">
-          <div class="card-title">Nutrition</div>
-          <div style="padding:16px;">
-            <label>칼로리(kcal):</label><br/><input id="nutrition-kcal" type="number" value="${dataStore.today.kcal||0}" min="0"/><br/>
-            <button id="save-nut">저장</button><button id="cancel-nut">취소</button>
-          </div>
-        </section>`;
-      document.getElementById('save-nut').addEventListener('click', () => {
-        dataStore.today.kcal = parseInt(document.getElementById('nutrition-kcal').value) || 0;
-        saveTodayData(); updateDashboard(); loadPage('dashboard');
-      });
-      document.getElementById('cancel-nut').addEventListener('click', () => loadPage('dashboard'));
-      return;
-    }
-
-    if (page === 'body-info') {
-      container.innerHTML = `
-        <section class="card">
-          <div class="card-title">Body Info</div>
-          <div style="padding:16px;">
-            <label>평균 심박수(bpm):</label><br/><input id="body-bpm" type="number" value="${dataStore.today.bpm||0}" min="0"/><br/>
-            <label>BMI:</label><br/><input id="body-bmi" type="number" value="${dataStore.today.bmi||0}" step="0.1"/><br/>
-            <button id="save-body">저장</button><button id="cancel-body">취소</button>
-          </div>
-        </section>`;
-      document.getElementById('save-body').addEventListener('click', () => {
-        dataStore.today.bpm = parseInt(document.getElementById('body-bpm').value) || 0;
-        dataStore.today.bmi = parseFloat(document.getElementById('body-bmi').value) || 0;
-        saveTodayData(); updateDashboard(); loadPage('dashboard');
-      });
-      document.getElementById('cancel-body').addEventListener('click', () => loadPage('dashboard'));
-      return;
-    }
-
-    // settings 등 기본 페이지
-    container.innerHTML = `<section class="card"><div class="card-title">${page}</div><div style="padding:16px;">준비중</div></section>`;
-  }
-
-  // 이벤트 위임: nav 한번만 바인딩
-  if (nav) {
-    nav.addEventListener('click', (e) => {
-      const item = e.target.closest('.nav-item');
-      if (!item) return;
-      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-      const page = item.dataset.page || item.textContent.trim().toLowerCase();
-      loadPage(page);
-    });
-  }
-
-  // 디버그 도구 (콘솔에서 호출)
-  window.__debug_elementsAt = (x,y) => { console.log(document.elementsFromPoint(x,y)); };
-
-  // 초기화
-  loadTodayData();
-  updateDashboard();
-  // 초기 nav 상태가 dashboard면 대시보드 유지
-  // (추가: nav active 표시 유지)
+  waitForLoadPage();
 });
