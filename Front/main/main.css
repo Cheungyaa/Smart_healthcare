@@ -28,6 +28,9 @@ body {
   flex-direction: column;
   gap: 1.5rem;
   flex-shrink: 0; /* 확대 시 사이드바 폭 유지 */
+  position: relative;
+  z-index: 9999; /* 필요한 경우 더 키우세요 */
+  pointer-events: auto;
 }
 
 .logo {
@@ -59,6 +62,8 @@ body {
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .nav-item.active {
@@ -84,6 +89,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  position: relative;
+  z-index: 0;
 }
 
 /* 헤더 */

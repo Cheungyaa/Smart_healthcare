@@ -62,19 +62,81 @@ function saveTodayData() {
   localStorage.setItem('todayData', JSON.stringify(dataStore.today));
 }
 
-// Dashboard 업데이트
+// Dashboard 업데이트 (현재 container의 DOM에 id가 있어야 동작)
 function updateDashboard() {
   loadTodayData();
-  document.getElementById('today-sleep').textContent = 
-    `${dataStore.today.sleep.hours}h ${dataStore.today.sleep.minutes}m`;
-  document.getElementById('today-steps').textContent = dataStore.today.steps.toLocaleString();
-  document.getElementById('today-kcal').textContent = `${dataStore.today.kcal} kcal`;
-  document.getElementById('today-bpm').textContent = `${dataStore.today.bpm} bpm`;
-  
-  // 칼로리 바 업데이트
-  const calPercent = Math.min((dataStore.today.kcal / 2200) * 100, 100);
-  document.getElementById('calorie-bar-fill').style.width = calPercent + '%';
-  document.getElementById('calorie-display').textContent = `${dataStore.today.kcal} kcal`;
+  const elSleep = document.getElementById('today-sleep');
+  const elSteps = document.getElementById('today-steps');
+  const elKcal = document.getElementById('today-kcal');
+  const elBpm = document.getElementById('today-bpm');
+  const elCalDisplay = document.getElementById('calorie-display');
+  const elCalBarFill = document.getElementById('calorie-bar-fill');
+  const insightEl = document.getElementById('insight-text');
+
+  if (elSleep) {
+    elSleep.textContent = `${dataStore.today.sleep.hours}h ${dataStore.today.sleep.minutes}m`;
+  }
+  if (elSteps) {
+    elSteps.textContent = Number(dataStore.today.steps).toLocaleString();
+  }
+  if (elKcal) {
+    elKcal.textContent = `${dataStore.today.kcal} kcal`;
+  }
+  if (elBpm) {
+    elBpm.textContent = `${dataStore.today.bpm} bpm`;
+  }
+  if (elCalDisplay) {
+    elCalDisplay.textContent = `${dataStore.today.kcal} kcal`;
+  }
+  if (elCalBarFill) {
+    const percent = Math.min(Math.round((dataStore.today.kcal / 2200) * 100), 100);
+    elCalBarFill.style.width = percent + '%';
+  }
+
+  // --- 인사이트 생성 로직 (실시간 반영) ---
+  if (insightEl) {
+    const insights = [];
+    // 수면 인사이트: 목표 7시간 기준
+    const sleepTotal = (Number(dataStore.today.sleep.hours) || 0) + ((Number(dataStore.today.sleep.minutes) || 0) / 60);
+    if (sleepTotal < 6.5) {
+      insights.push('수면 시간이 또래보다 부족합니다. 취침 시간을 20~30분 앞당기는 것을 권장합니다.');
+    } else if (sleepTotal < 7) {
+      insights.push('수면 시간이 약간 부족합니다. 수면 시간을 조금 늘려보세요.');
+    } else {
+      insights.push('수면 시간이 양호합니다. 충분한 수면을 유지하세요.');
+    }
+
+    // 걸음 인사이트: 목표 10000
+    const steps = Number(dataStore.today.steps) || 0;
+    if (steps < 5000) {
+      insights.push('오늘 걸음 수가 낮습니다. 가벼운 산책을 권장합니다.');
+    } else if (steps < 10000) {
+      insights.push('활동량이 보통입니다. 목표 걸음 수 달성을 시도해 보세요.');
+    } else {
+      insights.push('우와! 오늘 걸음 수 목표를 달성했습니다. 계속 유지하세요.');
+    }
+
+    // 칼로리 인사이트: 권장 2200kcal
+    const kcal = Number(dataStore.today.kcal) || 0;
+    if (kcal > 2600) {
+      insights.push('칼로리 섭취가 권장량을 초과했습니다. 섭취량을 조절하세요.');
+    } else if (kcal > 2200) {
+      insights.push('칼로리 섭취가 권장량에 근접합니다. 균형 있게 유지하세요.');
+    } else {
+      insights.push('칼로리 섭취가 적절합니다.');
+    }
+
+    // 심박 인사이트: 단순 범위 검사
+    const bpm = Number(dataStore.today.bpm) || 0;
+    if (bpm && (bpm < 50 || bpm > 100)) {
+      insights.push('심박수 범위가 평소와 다릅니다. 필요 시 전문가와 상담하세요.');
+    } else if (bpm) {
+      insights.push('심박수는 정상 범위 내에 있습니다.');
+    }
+
+    // 합쳐서 표시
+    insightEl.innerHTML = insights.map(s => `· ${s}`).join('<br>');
+  }
 }
 
 // 사이드바 클릭 핸들러
