@@ -18,6 +18,12 @@ body {
 
 /* 사이드바 */
 .sidebar {
+  position: relative;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+.sidebar {
   position: fixed;
   left: 0;
   top: 0;
@@ -63,6 +69,12 @@ body {
   pointer-events: auto;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.nav-item {
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
 }
 
 .nav-item.active {
@@ -335,3 +347,6 @@ body {
 .content-overlay, .modal-backdrop {
   pointer-events: none;
 }
+
+/* 만약 투명 오버레이가 있으면 pointer-events:none 테스트용 규칙 */
+/* .overlay { pointer-events: none !important; } */
