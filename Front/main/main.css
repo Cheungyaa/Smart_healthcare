@@ -14,23 +14,19 @@ body {
 .layout {
   display: flex;
   min-height: 100vh;
-  max-width: 1200px; /* 화면 너무 넓어지지 않게 제한 */
-  margin: 0 auto; /* 중앙 정렬 */
 }
 
 /* 사이드바 */
 .sidebar {
-  width: 18rem; /* 220px → 18rem */
-  background: #1f2933;
-  color: #cfd8e3;
-  padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex-shrink: 0; /* 확대 시 사이드바 폭 유지 */
-  position: relative;
-  z-index: 9999; /* 필요한 경우 더 키우세요 */
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px; /* 필요하면 기존 값으로 조정 */
+  padding: 28px 20px;
+  z-index: 9999; /* 최상단 배치 */
   pointer-events: auto;
+  background: #222b33; /* 기존 배경 유지하려면 제거 */
 }
 
 .logo {
@@ -57,11 +53,14 @@ body {
 }
 
 .nav-item {
+  display: block;
+  width: 100%;
   padding: 10px 12px;
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  pointer-events: auto;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -85,12 +84,14 @@ body {
 /* 메인 영역 */
 .main {
   flex: 1;
+  margin-left: 260px; /* 위 .sidebar width와 동일하게 유지 */
   padding: 24px 28px;
   display: flex;
   flex-direction: column;
   gap: 18px;
   position: relative;
-  z-index: 0;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 /* 헤더 */
@@ -328,4 +329,9 @@ body {
 .login-prompt p {
   font-size: 14px;
   color: #6b7280;
+}
+
+/* 만약 투명한 overlay 요소가 있다면 아래 규칙으로 클릭 우회 확인 */
+.content-overlay, .modal-backdrop {
+  pointer-events: none;
 }

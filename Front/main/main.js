@@ -331,32 +331,28 @@ loadTodayData();
 updateDashboard();
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 디버깅: nav-item 요소 수 출력
+  // 기존 초기화 코드가 여기 있음
+  // --- 디버그용 클릭 리스너 추가 ---
   const navItems = document.querySelectorAll('.nav-item');
-  console.log('nav-item count:', navItems.length);
-  navItems.forEach((el, idx) => console.log('nav-item', idx, el.textContent.trim()));
+  console.log('nav-item count =', navItems.length);
+  navItems.forEach((el, idx) => {
+    // 시각적 확인 로그
+    console.log('nav-item[' + idx + ']:', el.textContent.trim(), 'dataset.page=', el.dataset.page);
+    // 개별 클릭 리스너 (디버그)
+    el.addEventListener('click', (e) => {
+      console.log('DEBUG: nav clicked ->', el.dataset.page || el.textContent.trim());
+    });
+  });
 
-  // 이벤트 위임: .nav에 클릭 리스너 한 번만 등록
-  const nav = document.querySelector('.nav');
-  if (nav) {
-    nav.addEventListener('click', (e) => {
-      const item = e.target.closest('.nav-item');
-      if (!item) return;
-      // 클릭 로그
-      console.log('nav click ->', item.dataset.page || item.textContent.trim());
+  // 만약 클릭이 아예 발생하지 않으면, 화면 좌표로 어떤 요소가 클릭을 가로채는지 확인하는 함수
+  window.__debug_showElementAt = (x, y) => {
+    const els = document.elementsFromPoint(x, y);
+    console.log('elementsFromPoint', x, y, els);
+    return els;
+  };
+  // 예: 실행법 (브라우저 콘솔):
+  // __debug_showElementAt(30, 150)
+  // 좌표는 사이드바 텍스트 위치 근처 값으로 조정
 
-      // active 토글
-      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-
-      const page = item.dataset.page || item.textContent.trim().toLowerCase();
-      loadPage(page);
-    }, false);
-  } else {
-    console.warn('nav element not found');
-  }
-
-  // 기존에 바로 실행하던 초기화 호출들 (있는 경우 유지)
-  if (typeof loadTodayData === 'function') loadTodayData();
-  if (typeof updateDashboard === 'function') updateDashboard();
+  // ...기존 DOMContentLoaded 내부 초기화(이전 loadPage 등) 계속...
 });
