@@ -3,7 +3,7 @@
 console.log("✅ Life Log Dashboard loaded.");
 
 // 로그인 상태를 임시로 저장하는 변수 (실제 구현에서는 서버 세션이나 토큰 사용)
-const isLoggedIn = false; 
+const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
 document.querySelectorAll(".nav-item").forEach(item => {
   item.addEventListener("click", () => {
