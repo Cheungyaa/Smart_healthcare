@@ -21,17 +21,176 @@ const dataStore = {
     kcal: 0,
     bpm: 0,
     bmi: 0
+  },
+  history: {
+    labels: [],           // 날짜 라벨 (최근 7일)
+    sleep: [],            // 시간 (hours)
+    steps: [],
+    kcal: [],
+    bpm: [],
+    weight: []
   }
 };
 
 function loadTodayData() {
   const saved = localStorage.getItem('todayData');
   if (saved) {
-    try { Object.assign(dataStore.today, JSON.parse(saved)); } catch(e) { console.warn('todayData parse error', e); }
+    try { Object.assign(dataStore.today, JSON.parse(saved).today || {}); } catch(e) { console.warn('todayData parse error', e); }
+  }
+  // history 따로 로드
+  const savedHist = localStorage.getItem('todayHistory');
+  if (savedHist) {
+    try { Object.assign(dataStore.history, JSON.parse(savedHist)); } catch(e){ console.warn('history parse error', e); }
+  } else {
+    // 빈 초기화: 최근 7일 라벨 만들기 (D-6 ~ Today)
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      labels.push(d.toLocaleDateString());
+    }
+    dataStore.history.labels = labels;
+    dataStore.history.sleep = Array(7).fill(0);
+    dataStore.history.steps = Array(7).fill(0);
+    dataStore.history.kcal = Array(7).fill(0);
+    dataStore.history.bpm = Array(7).fill(0);
+    dataStore.history.weight = Array(7).fill(0);
   }
 }
 function saveTodayData() {
-  localStorage.setItem('todayData', JSON.stringify(dataStore.today));
+  // today 데이터 저장
+  localStorage.setItem('todayData', JSON.stringify({ today: dataStore.today }));
+  // history 저장
+  localStorage.setItem('todayHistory', JSON.stringify(dataStore.history));
+}
+
+// history에 오늘 값 push (최대 7개 유지)
+function pushTodayToHistory() {
+  const labels = dataStore.history.labels || [];
+  const nowLabel = new Date().toLocaleDateString();
+  // labels: 마지막이 오늘이면 덮어쓰기, 아니면 push shift
+  if (labels.length === 0 || labels[labels.length-1] !== nowLabel) {
+    labels.push(nowLabel);
+    if (labels.length > 7) labels.shift();
+    ['sleep','steps','kcal','bpm','weight'].forEach(key => {
+      dataStore.history[key].push(getHistoryValueForToday(key));
+      if (dataStore.history[key].length > 7) dataStore.history[key].shift();
+    });
+    dataStore.history.labels = labels;
+  } else {
+    // 덮어쓰기
+    const lastIndex = labels.length - 1;
+    ['sleep','steps','kcal','bpm','weight'].forEach(key => {
+      dataStore.history[key][lastIndex] = getHistoryValueForToday(key);
+    });
+  }
+  saveTodayData();
+}
+
+// key별 오늘값 매핑
+function getHistoryValueForToday(key) {
+  switch(key) {
+    case 'sleep': return Number(dataStore.today.sleep.hours || 0) + Number((dataStore.today.sleep.minutes || 0)/60);
+    case 'steps': return Number(dataStore.today.steps || 0);
+    case 'kcal': return Number(dataStore.today.kcal || 0);
+    case 'bpm': return Number(dataStore.today.bpm || 0);
+    case 'weight': return Number(dataStore.today.bmi || 0); // 임시로 BMI 대신 weight 사용 가능
+    default: return 0;
+  }
+}
+
+// Chart 인스턴스 보관
+let sleepActivityChart = null;
+let weightChart = null;
+
+function initCharts() {
+  // sleepActivityChart (sleep hours + steps)
+  const ctx1 = document.getElementById('sleepActivityChart');
+  if (ctx1) {
+    const labels = dataStore.history.labels;
+    sleepActivityChart = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'line',
+            label: '수면 시간(시간)',
+            data: dataStore.history.sleep,
+            yAxisID: 'y1',
+            borderColor: '#2a9df4',
+            backgroundColor: 'rgba(42,157,244,0.15)',
+            tension: 0.3,
+            pointRadius: 4
+          },
+          {
+            type: 'bar',
+            label: '걸음 수',
+            data: dataStore.history.steps,
+            yAxisID: 'y2',
+            backgroundColor: 'rgba(42,157,244,0.35)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y1: {
+            type: 'linear',
+            position: 'left',
+            title: { display: true, text: '시간(시간)' }
+          },
+          y2: {
+            type: 'linear',
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: '걸음 수' }
+          }
+        },
+        plugins: { legend: { position: 'top' } }
+      }
+    });
+  }
+
+  // weightChart (BMI/체중)
+  const ctx2 = document.getElementById('weightChart');
+  if (ctx2) {
+    weightChart = new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: dataStore.history.labels,
+        datasets: [{
+          label: 'BMI/체중 (임시)',
+          data: dataStore.history.weight,
+          borderColor: '#1f7fd1',
+          backgroundColor: 'rgba(31,127,209,0.15)',
+          tension: 0.25,
+          fill: true,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { title: { display: true, text: 'BMI' } } },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+}
+
+function updateCharts() {
+  if (sleepActivityChart) {
+    sleepActivityChart.data.labels = dataStore.history.labels;
+    sleepActivityChart.data.datasets[0].data = dataStore.history.sleep;
+    sleepActivityChart.data.datasets[1].data = dataStore.history.steps;
+    sleepActivityChart.update();
+  }
+  if (weightChart) {
+    weightChart.data.labels = dataStore.history.labels;
+    weightChart.data.datasets[0].data = dataStore.history.weight;
+    weightChart.update();
+  }
 }
 
 function updateDashboard() {
@@ -154,9 +313,9 @@ function renderSleepPage() {
   document.getElementById('save-sleep-btn').addEventListener('click', () => {
     dataStore.today.sleep.hours = parseInt(document.getElementById('sleep-hours').value) || 0;
     dataStore.today.sleep.minutes = parseInt(document.getElementById('sleep-minutes').value) || 0;
-    saveTodayData();
-    alert('Sleep 데이터가 저장되었습니다.');
+    pushTodayToHistory();
     updateDashboard();
+    updateCharts();
     loadPage('dashboard');
   });
 }
@@ -181,9 +340,11 @@ function renderActivityPage() {
   
   document.getElementById('save-activity-btn').addEventListener('click', () => {
     dataStore.today.steps = parseInt(document.getElementById('activity-steps').value) || 0;
+    pushTodayToHistory();
     saveTodayData();
     alert('Activity 데이터가 저장되었습니다.');
     updateDashboard();
+    updateCharts();
     loadPage('dashboard');
   });
 }
@@ -208,9 +369,11 @@ function renderNutritionPage() {
   
   document.getElementById('save-nutrition-btn').addEventListener('click', () => {
     dataStore.today.kcal = parseInt(document.getElementById('nutrition-kcal').value) || 0;
+    pushTodayToHistory();
     saveTodayData();
     alert('Nutrition 데이터가 저장되었습니다.');
     updateDashboard();
+    updateCharts();
     loadPage('dashboard');
   });
 }
@@ -235,9 +398,11 @@ function renderBodyInfoPage() {
   
   document.getElementById('save-body-btn').addEventListener('click', () => {
     dataStore.today.bpm = parseInt(document.getElementById('body-bpm').value) || 0;
+    pushTodayToHistory();
     saveTodayData();
     alert('Body Info 데이터가 저장되었습니다.');
     updateDashboard();
+    updateCharts();
     loadPage('dashboard');
   });
 }
@@ -292,5 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 초기 데이터 로드/렌더
   loadTodayData();
+  initCharts();         // 차트 인스턴스 생성
   updateDashboard();
+  updateCharts();       // 차트 데이터 그리기
 });
