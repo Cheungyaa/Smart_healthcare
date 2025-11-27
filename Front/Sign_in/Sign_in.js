@@ -1,4 +1,6 @@
 const URL = "http://htaeky.iptime.org:7002";
+// const URL = "http://localhost:7002";
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const signupForm = document.getElementById("signup-form");

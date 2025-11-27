@@ -14,7 +14,7 @@
 
 ## 📋 데이터베이스 테이블 구조
 
-### 👤 User
+### 👤 "User"
 
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
@@ -25,16 +25,48 @@
 
 ---
 
-### 🛌 Life_log
+### 🛌 sleep_actual (수면 실제 기록)
 
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
 | `user_id` | VARCHAR2(255) | FK → User |
 | `actual_start_sleep_time` | TIMESTAMP | 실제 수면 시작 |
 | `actual_end_sleep_time` | TIMESTAMP | 실제 수면 종료 |
-| `actual_sleep_time` | INTERVAL | 실제 수면 시간 |
-| `target_sleep_time` | INTERVAL | 목표 수면 시간 |
+| `actual_sleep_time` | INTERVAL DAY TO SECOND | 실제 수면 시간 |
+| `recorded_at` | TIMESTAMP | 기록 시간 |
+| ⛳ PK | `(user_id, recorded_at)` |
+
+---
+
+
+### 🎯 sleep_target (목표 수면 시간)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
+| `target_sleep_time` | INTERVAL DAY TO SECOND | 목표 수면 시간 |
+| ⛳ PK | `(user_id)` |
+
+---
+
+
+### 👣 steps (걸음 수 기록)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
 | `steps` | NUMBER | 걸음 수 👣 |
+| `recorded_at` | TIMESTAMP | 기록 시간 |
+| ⛳ PK | `(user_id, recorded_at)` |
+
+---
+
+
+### ❤️ heart_rate (심박수 기록)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
 | `heart_rate` | NUMBER | 심박수 ❤️ |
 | `recorded_at` | TIMESTAMP | 기록 시간 |
 | ⛳ PK | `(user_id, recorded_at)` |
@@ -52,10 +84,9 @@
 | `weight` | NUMBER | 체중 ⚖️ |
 | `height` | NUMBER | 키 📏 |
 | `bmi` | NUMBER | BMI |
-| `blood_pressure` | NUMBER | 혈압 |
 | `activity_factor` | NUMBER | 활동 지수 🏃 |
-| `recorded_at` | TIMESTAMP | 기록 시간 |
-| ⛳ PK | `(user_id, recorded_at)` |
+| `blood_pressure` | NUMBER | 혈압 |
+| ⛳ PK | `(user_id)` |
 
 ---
 
