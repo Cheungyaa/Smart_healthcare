@@ -16,15 +16,22 @@ function isLoggedIn() {
 // 데이터 저장/로드 (localStorage 사용)
 const dataStore = {
   today: {
-    sleep: { hours: 0, minutes: 0 },
+    sleep: { 
+      hours: 0, 
+      minutes: 0,
+      start: "",     // 추가된 항목: 수면 시작 시간 (HH:MM)
+      end: ""        // 추가된 항목: 수면 종료 시간 (HH:MM)
+    },
     steps: 0,
     kcal: 0,
     bpm: 0,
-    bmi: 0
+    bmi: 0,
+    foodLogs: []      // 음식: { food, weight, kcal }로 저장되는 리스트 (Nutrition 페이지에서 사용)
   },
+
   history: {
-    labels: [],           // 날짜 라벨 (최근 7일)
-    sleep: [],            // 시간 (hours)
+    labels: [],       // 날짜 라벨 (최근 7일)
+    sleep: [],        // 수면 시간(시간 단위)
     steps: [],
     kcal: [],
     bpm: [],
