@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/imhyeongtaeg/Library/Mobile Documents/com~apple~CloudDocs/2025-2/데이터베이스/프로젝트/Smart_healthcare/.venv/bin/python" "$0" "$@"
+'''exec' "/Users/imhyeongtaeg/Library/Mobile Documents/com~apple~CloudDocs/01_Univercity/2025_2/02_데이터베이스/04_프로젝트/Smart_healthcare/.venv/bin/python" "$0" "$@"
 ' '''
 import sys
 from flask.cli import main
