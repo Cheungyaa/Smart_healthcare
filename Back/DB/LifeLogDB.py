@@ -1,4 +1,4 @@
-from DBManager import DBManager
+from .DBManager import DBManager
 
 class LifeLogDB:
     def __init__(self):

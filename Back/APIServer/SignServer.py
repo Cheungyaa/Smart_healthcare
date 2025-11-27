@@ -1,10 +1,7 @@
-# import sys
-# import os
-# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from DB.UserDB import UserDB
+
+from ..DB.UserDB import UserDB
 
 class SignServer:
     def __init__(self):

@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from datetime import datetime
 
-from DB.LifeLogDB import LifeLogDB
-from DB.BodyInfoDB import BodyInfoDB
+from ..DB.LifeLogDB import LifeLogDB
+from ..DB.BodyInfoDB import BodyInfoDB
+from ..DB.FoodDB import FoodDB
 
 class InfoServer:
     def __init__(self):
@@ -41,9 +43,9 @@ class InfoServer:
         @self.app.post("/addActualSleep")
         def addActualSleep():
             data = request.json
-            user_id, start, end = (
-                data.get("user_id"), data.get("start"), data.get("end")
-            )
+            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
+            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
             flag = lifeLogDB.addActualSleep(user_id, start, end)
@@ -53,6 +55,8 @@ class InfoServer:
         def getActualSleep():
             data = request.json
             user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
+            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
             actual_sleep = lifeLogDB.getActualSleep(user_id, start, end)
@@ -91,6 +95,8 @@ class InfoServer:
         def getSteps():
             data = request.json
             user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
+            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
             steps = lifeLogDB.getSteps(user_id, start, end)
@@ -110,6 +116,8 @@ class InfoServer:
         def getHeartRate():
             data = request.json
             user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
+            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
             heart_rate = lifeLogDB.getHeartRate(user_id, start, end)
@@ -129,6 +137,8 @@ class InfoServer:
         def getFoodLog():
             data = request.json
             user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
+            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
             
             foodDB = FoodDB()
             food_log = foodDB.getFoodLog(user_id, start, end)

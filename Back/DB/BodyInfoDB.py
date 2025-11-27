@@ -1,4 +1,4 @@
-from DBManager import DBManager
+from .DBManager import DBManager
 
 class BodyInfoDB:
     def __init__(self):

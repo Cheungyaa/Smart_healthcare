@@ -1,4 +1,4 @@
-from DBManager import DBManager
+from Back.DB.DBManager import DBManager
 
 DBManager = DBManager()
 connect = DBManager.getConnection()

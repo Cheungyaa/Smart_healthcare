@@ -1,4 +1,4 @@
-from DBManager import DBManager
+from .DBManager import DBManager
 from datetime import datetime
 
 class UserDB:

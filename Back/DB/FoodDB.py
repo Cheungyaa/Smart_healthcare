@@ -1,4 +1,4 @@
-from DBManager import DBManager
+from .DBManager import DBManager
 
 class FoodDB:
     def __init__(self):
