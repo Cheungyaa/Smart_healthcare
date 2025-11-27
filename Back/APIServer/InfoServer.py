@@ -115,4 +115,32 @@ class InfoServer:
             heart_rate = lifeLogDB.getHeartRate(user_id, start, end)
             heart_rate.replace("\n", "").replace("\r", "")
             return jsonify(heart_rate)
+        
+        @self.app.post("/addFoodLog")
+        def addFoodLog():
+            data = request.json
+            user_id, food_name, food_weight = (data.get("user_id"), data.get("food_name"), data.get("food_weight"))
             
+            foodDB = FoodDB()
+            flag = foodDB.addFoodLog(user_id, food_name, food_weight)
+            return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
+        
+        @self.app.post("/getFoodLog")
+        def getFoodLog():
+            data = request.json
+            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
+            
+            foodDB = FoodDB()
+            food_log = foodDB.getFoodLog(user_id, start, end)
+            food_log.replace("\n", "").replace("\r", "")
+            return jsonify(food_log)
+        
+        @self.app.post("/deleteAllData")
+        def deleteAllData():
+            data = request.json
+            user_id = data.get("user_id")
+            
+            bodyInfoDB = BodyInfoDB()
+            flag = bodyInfoDB.deleteAllData(user_id)
+            return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
+        
