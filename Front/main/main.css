@@ -18,39 +18,18 @@ body {
 
 /* 사이드바 */
 .sidebar {
-  position: relative;
-  z-index: 9999;
-  pointer-events: auto;
-}
-
-.sidebar {
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 260px; /* 필요하면 기존 값으로 조정 */
+  width: 260px;
   padding: 28px 20px;
-  z-index: 9999; /* 최상단 배치 */
+  z-index: 9999;
   pointer-events: auto;
-  background: #222b33; /* 기존 배경 유지하려면 제거 */
+  background: #111827;              /* 더 진한 남색 배경 */
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.logo-icon {
-  width: 20px;
-  height: 20px;
-  background: #ffffff;
-  border-radius: 50%;
-}
-
+/* 메뉴 공통 스타일 */
 .nav {
   display: flex;
   flex-direction: column;
@@ -69,21 +48,17 @@ body {
   pointer-events: auto;
   -webkit-user-select: none;
   user-select: none;
-}
 
-.nav-item {
-  cursor: pointer;
-  user-select: none;
-  pointer-events: auto;
+  color: #e5e7eb;                   /* 기본 글자 밝게 */
 }
 
 .nav-item.active {
-  background: #111827;
-  color: #ffffff;
+  background: #f9fafb;              /* 활성화: 연한 배경 */
+  color: #111827;                   /* 진한 글자색 */
 }
 
 .nav-item:hover:not(.active) {
-  background: #323f4b;
+  background: #1f2937;              /* hover 시 살짝 밝은 남색 */
   color: #ffffff;
 }
 
