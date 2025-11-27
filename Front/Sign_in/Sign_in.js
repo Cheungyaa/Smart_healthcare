@@ -1,5 +1,5 @@
-const URL = "http://htaeky.iptime.org:7002";
-// const URL = "http://localhost:7002";
+import { SIGN_URL as URL } from '../main/config.js';
+// const URL = "http://htaeky.iptime.org:7002";
 
 
 document.addEventListener("DOMContentLoaded", () => {

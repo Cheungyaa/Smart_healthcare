@@ -5,14 +5,14 @@ class BodyInfoDB:
         self.connect = DBManager.getConnection()
         self.cur = DBManager.getCursor()
     
-    def updateBodyInfo(self, user_id, weight, height, activity_factor, blood_pressure): 
+    def updateBodyInfo(self, user_id, weight, height, activity_factor, blood_pressure_sys, blood_pressure_dia): 
         bmi = weight / (height * height)
         
         self.cur.execute("""
             UPDATE Body_info
-            SET weight = :weight, height = :height, bmi = :bmi, activity_factor = :activity_factor, blood_pressure = :blood_pressure
+            SET weight = :weight, height = :height, bmi = :bmi, activity_factor = :activity_factor, blood_pressure_systolic = :blood_pressure_sys, blood_pressure_diastolic = :blood_pressure_dia
             WHERE user_id = :user_id
-            """, {"user_id": user_id, "weight": weight, "height": height, "bmi": bmi, "activity_factor": activity_factor, "blood_pressure": blood_pressure}
+            """, {"user_id": user_id, "weight": weight, "height": height, "bmi": bmi, "activity_factor": activity_factor, "blood_pressure_sys": blood_pressure_sys, "blood_pressure_dia": blood_pressure_dia}
         )
         
         self.connect.commit()

@@ -1,4 +1,4 @@
-const URL = "http://htaeky.iptime.org:7002";
+import { SIGN_URL as URL } from '../main/config.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
@@ -14,10 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
         // 서버에 로그인 요청
         // 성공 시 {"message": "success"} json 객체 전송
         // 실패 시 {"message": "fail"} json 객체 전송 : id가 없거나 pw 불일치
-        const res = await fetch(URL+"/LogIn", {
+        const res = await fetch(URL + "/LogIn", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({id: username, pw: password})
+            body: JSON.stringify({ id: username, pw: password })
         });
 
         // 응답 JSON 파싱

@@ -85,7 +85,8 @@
 | `height` | NUMBER | 키 📏 |
 | `bmi` | NUMBER | BMI |
 | `activity_factor` | NUMBER | 활동 지수 🏃 |
-| `blood_pressure` | NUMBER | 혈압 |
+| `blood_pressure_systolic` | NUMBER | 혈압 |
+| `blood_pressure_diastolic` | NUMBER | 혈압 |
 | ⛳ PK | `(user_id)` |
 
 ---

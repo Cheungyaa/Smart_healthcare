@@ -1,7 +1,9 @@
+import { INFO_URL } from '../main/config.js';
+
 document.addEventListener("DOMContentLoaded", () => {
     const bodyInfoForm = document.getElementById("body-info-form");
 
-    bodyInfoForm.addEventListener("submit", (event) => {
+    bodyInfoForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const weight = parseFloat(event.target.weight.value);
@@ -25,47 +27,35 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // ------------------------------------------
-        // 🔥 BMI 자동 계산 (DB 컬럼에도 존재)
-        // BMI = 체중(kg) / (신장(m)^2)
-        // ------------------------------------------
-        const bmi = weight / Math.pow(height / 100, 2);
 
-        // ------------------------------------------
-        // 🔥 DB 스키마에 맞춰 저장할 데이터 payload 구성
-        // ------------------------------------------
         const bodyInfoData = {
             weight: weight,
             height: height,
-            blood_pressure_systolic: systolic,
-            blood_pressure_diastolic: diastolic,
-            activity_factor: activity_factor,
-            bmi: bmi.toFixed(1),
-            recorded_at: recorded_at
+            blood_pressure_sys: systolic,
+            blood_pressure_dia: diastolic,
+            activity_factor: activity_factor
         };
 
-        console.log("📌 서버로 전송될 신체 정보:", bodyInfoData);
+        console.log("서버로 전송될 신체 정보:", bodyInfoData);
 
-        // ------------------------------------------
-        // 🔥 실제 서버로 전송 (예시: FastAPI 또는 Flask)
-        // 팀원 서버 URL 맞춰서 변경
-        // ------------------------------------------
-        fetch("http://htaeky.iptime.org:7002/api/body-info", {
+        const res = await fetch(`${INFO_URL}/addBodyInfo`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(bodyInfoData)
         })
-        .then(res => res.json())
-        .then(data => {
-            console.log("서버 응답:", data);
+
+        const data = await res.json();
+        const msg = data.message;
+
+        // 로그인 성공 시 대시보드 페이지로 이동
+        if (msg == "success") {
             alert("정보가 성공적으로 저장되었습니다!");
-            window.location.href = "../main/main.html";
-        })
-        .catch(err => {
-            console.error("서버 오류:", err);
-            alert("서버 연결 오류가 발생했습니다.");
-        });
+            window.location.href = "../main/main.html"; // log_in -> main 폴더로 이동} // 다음 화면으로 변경
+        }
+        else {
+            alert("정보 저장에 실패했습니다"); // 경고 메세지 출력
+        }
     });
 });

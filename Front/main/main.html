@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,184 +9,186 @@
   <!-- Chart.js CDN 추가 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
-<div class="layout">
+  <div class="layout">
 
-  <!-- 사이드바 -->
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon"></div>
-      <span>Life Log Dashboard</span>
-    </div>
-    <nav class="nav">
-      <div class="nav-item active" data-page="dashboard">Dashboard</div>
-      <div class="nav-item" data-page="sleep">Sleep</div>
-      <div class="nav-item" data-page="activity">Activity</div>
-      <div class="nav-item" data-page="nutrition">Nutrition</div>
-      <div class="nav-item" data-page="body-info">Body Info</div>
-      <div class="nav-item" data-page="settings">Settings</div>
-    </nav>
-    <div class="sidebar-bottom">
-      © 2025 Life Log
-    </div>
-  </aside>
-
-  <!-- 메인 -->
-  <main class="main">
-
-    <header class="header">
-      <div class="header-title">Today Summary</div>
-      <div class="header-right">
-        <!-- 로그인 전 상태 -->
-        <div class="auth-buttons">
-          <button id="login-btn" class="btn btn-secondary">로그인</button>
-          <button id="signup-btn" class="btn btn-primary">회원가입</button>
-        </div>
-        <!-- 로그인 후 상태 (기본적으로 숨김) -->
-        <div class="user-info hidden">
-          <span id="username">홍길동</span>
-          <div class="user-avatar"></div>
-          <button id="logout-btn" class="btn btn-secondary">로그아웃</button>
-        </div>
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <span>Life Log Dashboard</span>
       </div>
-    </header>
+      <nav class="nav">
+        <div class="nav-item active" data-page="dashboard">Dashboard</div>
+        <div class="nav-item" data-page="sleep">Sleep</div>
+        <div class="nav-item" data-page="activity">Activity</div>
+        <div class="nav-item" data-page="nutrition">Nutrition</div>
+        <div class="nav-item" data-page="body-info">Body Info</div>
+        <div class="nav-item" data-page="settings">Settings</div>
+      </nav>
+      <div class="sidebar-bottom">
+        © 2025 Life Log
+      </div>
+    </aside>
 
-    <!-- 콘텐츠 영역: 동적 로드 -->
-    <div id="content-container">
-      <!-- 상단 Today Summary 카드 -->
-      <section class="summary-section card">
-        <div class="summary-cards">
-          <div class="summary-card sleep">
-            <span class="label">수면 시간</span>
-            <span class="value" id="today-sleep">0h 0m</span>
-            <span class="label">목표 7h</span>
+    <!-- 메인 -->
+    <main class="main">
+
+      <header class="header">
+        <div class="header-title">Today Summary</div>
+        <div class="header-right">
+          <!-- 로그인 전 상태 -->
+          <div class="auth-buttons">
+            <button id="login-btn" class="btn btn-secondary">로그인</button>
+            <button id="signup-btn" class="btn btn-primary">회원가입</button>
           </div>
-          <div class="summary-card steps">
-            <span class="label">오늘 걸음 수</span>
-            <span class="value" id="today-steps">0</span>
-            <span class="label">목표 10,000</span>
-          </div>
-          <div class="summary-card kcal">
-            <span class="label">섭취 칼로리</span>
-            <span class="value" id="today-kcal">0 kcal</span>
-            <span class="label">권장 2,200 kcal</span>
-          </div>
-          <div class="summary-card bpm">
-            <span class="label">평균 심박수</span>
-            <span class="value" id="today-bpm">0 bpm</span>
-            <span class="label">정상 범위</span>
+          <!-- 로그인 후 상태 (기본적으로 숨김) -->
+          <div class="user-info hidden">
+            <span id="username">홍길동</span>
+            <div class="user-avatar"></div>
+            <button id="logout-btn" class="btn btn-secondary">로그아웃</button>
           </div>
         </div>
-      </section>
+      </header>
 
-      <!-- 중단: 수면 & 활동, 칼로리/체중 -->
-      <section class="grid-2">
-        <!-- Sleep & Activity Chart -->
-        <div class="card">
-          <div class="chart-content">
-            <div class="card-title">수면 & 활동 추이 (최근 7일)</div>
-            <div class="chart-placeholder">
-              데이터 영역 (차트는 로그인 후 표시됩니다)
+      <!-- 콘텐츠 영역: 동적 로드 -->
+      <div id="content-container">
+        <!-- 상단 Today Summary 카드 -->
+        <section class="summary-section card">
+          <div class="summary-cards">
+            <div class="summary-card sleep">
+              <span class="label">수면 시간</span>
+              <span class="value" id="today-sleep">0h 0m</span>
+              <span class="label">목표 7h</span>
+            </div>
+            <div class="summary-card steps">
+              <span class="label">오늘 걸음 수</span>
+              <span class="value" id="today-steps">0</span>
+              <span class="label">목표 10,000</span>
+            </div>
+            <div class="summary-card kcal">
+              <span class="label">섭취 칼로리</span>
+              <span class="value" id="today-kcal">0 kcal</span>
+              <span class="label">권장 2,200 kcal</span>
+            </div>
+            <div class="summary-card bpm">
+              <span class="label">평균 심박수</span>
+              <span class="value" id="today-bpm">0 bpm</span>
+              <span class="label">정상 범위</span>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- 칼로리 & 체중 -->
-        <div class="card">
-          <div class="card-title">칼로리 섭취</div>
-          <div>
-            <div style="font-size:18px; font-weight:600;" id="calorie-display">0 kcal</div>
-            <div class="subtext">권장 2,200 kcal</div>
-            <div class="calorie-bar">
-              <div class="calorie-bar-fill" id="calorie-bar-fill" style="width:0%"></div>
+        <!-- 중단: 수면 & 활동, 칼로리/체중 -->
+        <section class="grid-2">
+          <!-- Sleep & Activity Chart -->
+          <div class="card">
+            <div class="chart-content">
+              <div class="card-title">수면 & 활동 추이 (최근 7일)</div>
+              <div class="chart-placeholder">
+                데이터 영역 (차트는 로그인 후 표시됩니다)
+              </div>
             </div>
           </div>
 
-          <div class="card-title" style="margin-top:16px;">체중 추이</div>
-          <div class="chart-placeholder" style="height:80px;">
-            Weight / BMI Trend Placeholder
+          <!-- 칼로리 & 체중 -->
+          <div class="card">
+            <div class="card-title">칼로리 섭취</div>
+            <div>
+              <div style="font-size:18px; font-weight:600;" id="calorie-display">0 kcal</div>
+              <div class="subtext">권장 2,200 kcal</div>
+              <div class="calorie-bar">
+                <div class="calorie-bar-fill" id="calorie-bar-fill" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div class="card-title" style="margin-top:16px;">체중 추이</div>
+            <div class="chart-placeholder" style="height:80px;">
+              Weight / BMI Trend Placeholder
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 하단: 또래 비교 -->
-      <section class="grid-2-bottom">
-        <!-- Peer Comparison -->
-        <div class="card">
-          <div class="card-title">
-            또래 평균 비교
-            <span class="tag">Age 20–24 · Male</span>
+        <!-- 하단: 또래 비교 -->
+        <section class="grid-2-bottom">
+          <!-- Peer Comparison -->
+          <div class="card">
+            <div class="card-title">
+              또래 평균 비교
+              <span class="tag">Age 20–24 · Male</span>
+            </div>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>지표</th>
+                  <th>나</th>
+                  <th>또래 평균</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>수면 시간</td>
+                  <td id="peer-my-sleep">0</td>
+                  <td id="peer-avg-sleep">7.1 h</td>
+                </tr>
+                <tr>
+                  <td>걸음 수</td>
+                  <td id="peer-my-steps">0</td>
+                  <td id="peer-avg-steps">9,500</td>
+                </tr>
+                <tr>
+                  <td>BMI</td>
+                  <td id="peer-my-bmi">0</td>
+                  <td id="peer-avg-bmi">22.4</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <table class="comparison-table">
-            <thead>
-            <tr>
-              <th>지표</th>
-              <th>나</th>
-              <th>또래 평균</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>수면 시간</td>
-              <td id="peer-my-sleep">0</td>
-              <td id="peer-avg-sleep">7.1 h</td>
-            </tr>
-            <tr>
-              <td>걸음 수</td>
-              <td id="peer-my-steps">0</td>
-              <td id="peer-avg-steps">9,500</td>
-            </tr>
-            <tr>
-              <td>BMI</td>
-              <td id="peer-my-bmi">0</td>
-              <td id="peer-avg-bmi">22.4</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
 
-        <!-- 메모 / 인사이트 영역 -->
-        <div class="card">
-          <div class="card-title">오늘의 인사이트</div>
-          <p class="subtext" id="insight-text">
-            <!-- 실시간 인사이트가 여기에 표시됩니다 -->
-          </p>
-        </div>
-      </section>
-    </div>
+          <!-- 메모 / 인사이트 영역 -->
+          <div class="card">
+            <div class="card-title">오늘의 인사이트</div>
+            <p class="subtext" id="insight-text">
+              <!-- 실시간 인사이트가 여기에 표시됩니다 -->
+            </p>
+          </div>
+        </section>
+      </div>
 
-  </main>
-</div>
+    </main>
+  </div>
 
-<script>
-  // 로그인 상태 확인
-  if (!localStorage.getItem("isLoggedIn")) {
+  <script>
+    // 로그인 상태 확인
+    if (!localStorage.getItem("isLoggedIn")) {
       // 로그인 없을 때는 대시보드 접근 제한(개발 중이면 주석 처리 가능)
       // alert("로그인 후 이용해주세요.");
       // window.location.href = "../log_in/login.html";
-  } else {
+    } else {
       const username = localStorage.getItem("username") || '사용자';
       document.getElementById("username").textContent = username;
       document.querySelector(".auth-buttons").classList.add("hidden");
       document.querySelector(".user-info").classList.remove("hidden");
-  }
+    }
 
-  // 로그아웃
-  document.getElementById("logout-btn").addEventListener("click", () => {
+    // 로그아웃
+    document.getElementById("logout-btn").addEventListener("click", () => {
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("username");
       alert("로그아웃되었습니다.");
       window.location.href = "../log_in/login.html";
-  });
+    });
 
-  document.getElementById("login-btn").addEventListener("click", () => {
+    document.getElementById("login-btn").addEventListener("click", () => {
       window.location.href = "../log_in/login.html";
-  });
+    });
 
-  document.getElementById("signup-btn").addEventListener("click", () => {
+    document.getElementById("signup-btn").addEventListener("click", () => {
       window.location.href = "../Sign_in/Sign_in.html";
-  });
-</script>
-<script src="main.js"></script>
+    });
+  </script>
+  <script type="module" src="main.js"></script>
 </body>
+
 </html>

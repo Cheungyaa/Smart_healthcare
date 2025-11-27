@@ -21,13 +21,13 @@ class InfoServer:
         @self.app.post("/addBodyInfo")
         def addBodyInfo():
             data = request.json
-            user_id, weight, height, activity_factor, blood_pressure = (
+            user_id, weight, height, activity_factor, blood_pressure_sys, blood_pressure_dia = (
                 data.get("user_id"), data.get("weight"), data.get("height"), 
-                data.get("activity_factor"), data.get("blood_pressure")
+                data.get("activity_factor"), data.get("blood_pressure_sys"), data.get("blood_pressure_dia")
             )
             
             bodyInfoDB = BodyInfoDB()
-            flag = bodyInfoDB.addBodyInfo(user_id, weight, height, activity_factor, blood_pressure)
+            flag = bodyInfoDB.addBodyInfo(user_id, weight, height, activity_factor, blood_pressure_sys, blood_pressure_dia)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
         
         @self.app.post("/getBodyInfo")
