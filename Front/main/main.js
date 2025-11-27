@@ -2,6 +2,18 @@ import { INFO_URL } from './config.js';
 
 console.log("✅ Life Log Dashboard loaded.");
 
+/* ==== 수정사항 ====
+백:
+- 서버 안열리는 버그 수정
+
+프론트 메인:
+- sleep, activity, body info 페이지에 로컬에 데이터 저장하면서 같이 서버에 데이터 전송 리퀘스트 추가함
+- nutrition에 음식 저장하면 서버에 전송하고 바로 오늘 총 칼로리 섭취량 계산해서 저장하는거 추가함
+- formatDate 함수 두개 추가 : 서버에 전송하는 날짜 데이터 형식 맞춰주는 함수
+- loadTodayData() 함수에 하위 함수 두 개 추가해서 최초 데이터 로드 시, 서버에서 데이터 가져와서 데이터 객체 생성하는 코드 추가함
+
+** 프론트는 테스트 안해봄
+*/
 
 // 음식 이름 리스트
 const FOOD_NAMES = [
