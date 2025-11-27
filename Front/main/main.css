@@ -16,7 +16,9 @@ body {
   min-height: 100vh;
 }
 
-/* 사이드바 */
+/* =========================
+   사이드바
+   ========================= */
 .sidebar {
   position: fixed;
   left: 0;
@@ -27,6 +29,28 @@ body {
   z-index: 9999;
   pointer-events: auto;
   background: #111827;              /* 더 진한 남색 배경 */
+}
+
+/* ★ 로고(제목) 영역 – 글씨 흰색으로 가독성 ↑ */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: #f9fafb;
+}
+
+.logo-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f9fafb;
+}
+
+.logo span {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9fafb;   /* Life Log Dashboard 글씨 흰색 */
 }
 
 /* 메뉴 공통 스타일 */
@@ -68,11 +92,13 @@ body {
   color: #9fb3c8;
 }
 
-/* 메인 영역 */
+/* =========================
+   메인 영역
+   ========================= */
 .main {
   flex: 1;
   margin-left: 260px; /* 위 .sidebar width와 동일하게 유지 */
-  padding: 24px 28px;
+  padding: 24px 32px 32px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -98,21 +124,24 @@ body {
 .card {
   background: #ffffff;
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 1.1rem;
   box-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.06);
 }
 
-/* Today Summary 영역 */
+/* =========================
+   Today Summary 영역
+   ========================= */
 .summary-section h2 {
   font-size: 18px;
   margin-bottom: 10px;
   color: #111827;
 }
 
+/* ★ 상단 4 카드 레이아웃 */
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .summary-card {
@@ -122,11 +151,12 @@ body {
   gap: 6px;
   color: #ffffff;
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   font-size: 13px;
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
 }
 
+/* 라벨/값 */
 .summary-card span.label {
   opacity: 0.9;
 }
@@ -136,28 +166,49 @@ body {
   font-weight: 600;
 }
 
-.summary-card.sleep { background: #26c6da; }
-.summary-card.steps { background: #ff7043; }
-.summary-card.kcal  { background: #ffb300; }
-.summary-card.bpm   { background: #5c6bc0; }
+/* ★ 카드 색상 – 쿨톤 단색 계열로 정리 */
+.summary-card.sleep {
+  background: #38bdf8; /* 하늘색 */
+}
 
-/* 그래프 섹션 레이아웃 */
+.summary-card.steps {
+  background: #1d4ed8; /* 진한 파랑 */
+}
+
+.summary-card.kcal {
+  background: #0ea5e9; /* 청록 계열 파랑 */
+}
+
+.summary-card.bpm {
+  background: #6366f1; /* 인디고 */
+}
+
+/* =========================
+   그래프 섹션 레이아웃
+   ========================= */
 .grid-2 {
   display: grid;
   grid-template-columns: 2fr 1.3fr;
-  gap: 14px;
-  margin-top: 4px;
+  gap: 18px;          /* ★ 카드 사이 간격 살짝 넓힘 */
+  margin-top: 8px;
+}
+
+/* ★ 중단/하단 카드에 일정 높이 줘서 화면 채우기 */
+.grid-2 .card,
+.grid-2-bottom .card {
+  min-height: 230px;
 }
 
 .grid-2 .card-title {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: #374151;
 }
 
+/* 그래프 박스 */
 .chart-placeholder {
-  height: 150px;
+  height: 180px;       /* ★ 조금 더 키워서 아래 빈 공간 줄이기 */
   border-radius: 10px;
   background: linear-gradient(to bottom, #edf2ff, #ffffff);
   border: 1px solid #e5e7eb;
@@ -168,11 +219,14 @@ body {
   color: #9ca3af;
 }
 
-/* 하단 2열 */
+/* =========================
+   하단 2열
+   ========================= */
 .grid-2-bottom {
   display: grid;
   grid-template-columns: 1.4fr 1.6fr;
-  gap: 14px;
+  gap: 18px;          /* ★ 하단 카드 간격도 통일 */
+  margin-top: 10px;
 }
 
 .calorie-bar {
@@ -225,7 +279,9 @@ body {
   color: #2563eb;
 }
 
-/* 반응형 */
+/* =========================
+   반응형
+   ========================= */
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;
