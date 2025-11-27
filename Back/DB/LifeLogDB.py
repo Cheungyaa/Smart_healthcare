@@ -2,8 +2,9 @@ from .DBManager import DBManager
 
 class LifeLogDB:
     def __init__(self):
-        self.connect = DBManager.getConnection()
-        self.cur = DBManager.getCursor()
+        self.dbManager = DBManager()
+        self.connect = self.dbManager.getConnection()
+        self.cur = self.dbManager.getCursor()
     
     def addActualSleep(self, user_id, start, end):
         interval = end - start
@@ -20,7 +21,7 @@ class LifeLogDB:
         )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def getActualSleep(self, user_id, start, end):
@@ -30,7 +31,7 @@ class LifeLogDB:
             AND actual_start_sleep BETWEEN :start AND :end
             """, {"user_id": user_id, "start": start, "end": end})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchall()
     
     def addTargetSleep(self, user_id, interval):
@@ -55,7 +56,7 @@ class LifeLogDB:
             )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def getTargetSleep(self, user_id):
@@ -64,7 +65,7 @@ class LifeLogDB:
             WHERE user_id = :user_id
             """, {"user_id": user_id})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchone()
     
     def addSteps(self, user_id, steps):
@@ -78,7 +79,7 @@ class LifeLogDB:
         )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def getSteps(self, user_id, start, end):
@@ -87,7 +88,7 @@ class LifeLogDB:
             AND recorded_at BETWEEN :start AND :end
             """, {"user_id": user_id, "start": start, "end": end})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchall()
     
     def addHeartRate(self, user_id, heart_rate):
@@ -101,7 +102,7 @@ class LifeLogDB:
         )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def getHeartRate(self, user_id, start, end):
@@ -110,6 +111,6 @@ class LifeLogDB:
             AND recorded_at BETWEEN :start AND :end
             """, {"user_id": user_id, "start": start, "end": end})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchall()
         

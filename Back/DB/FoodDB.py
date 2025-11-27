@@ -2,8 +2,9 @@ from .DBManager import DBManager
 
 class FoodDB:
     def __init__(self):
-        self.connect = DBManager.getConnection()
-        self.cur = DBManager.getCursor()
+        self.dbManager = DBManager()
+        self.connect = self.dbManager.getConnection()
+        self.cur = self.dbManager.getCursor()
     
     def getFoodList(self, user_id):
         self.cur.execute("""
@@ -11,7 +12,7 @@ class FoodDB:
             WHERE user_id = :user_id
             """, {"user_id": user_id})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchall()
     
     def addFoodLog(self, user_id, food_name, food_weight):
@@ -39,7 +40,7 @@ class FoodDB:
         )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def getFoodLog(self, user_id, start, end):
@@ -49,5 +50,5 @@ class FoodDB:
             AND recorded_at BETWEEN :start AND :end
             """, {"user_id": user_id, "start": start, "end": end})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchall()

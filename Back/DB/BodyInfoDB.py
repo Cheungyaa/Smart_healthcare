@@ -2,8 +2,9 @@ from .DBManager import DBManager
 
 class BodyInfoDB:
     def __init__(self):
-        self.connect = DBManager.getConnection()
-        self.cur = DBManager.getCursor()
+        self.dbManager = DBManager()
+        self.connect = self.dbManager.getConnection()
+        self.cur = self.dbManager.getCursor()
     
     def updateBodyInfo(self, user_id, weight, height, activity_factor, blood_pressure_sys, blood_pressure_dia): 
         bmi = weight / (height * height)
@@ -16,7 +17,7 @@ class BodyInfoDB:
         )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def getBodyInfo(self, user_id):
@@ -25,7 +26,7 @@ class BodyInfoDB:
             WHERE user_id = :user_id
             """, {"user_id": user_id})
         
-        DBManager.close()
+        self.dbManager.close()
         return self.cur.fetchone()
     
     def deleteAllData(self, user_id):
@@ -38,5 +39,5 @@ class BodyInfoDB:
                 """, {"user_id": user_id, "table": table})
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True

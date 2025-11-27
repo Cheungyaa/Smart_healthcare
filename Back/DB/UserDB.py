@@ -3,8 +3,9 @@ from datetime import datetime
 
 class UserDB:
     def __init__(self):
-        self.connect = DBManager.getConnection()
-        self.cur = DBManager.getCursor()
+        self.dbManager = DBManager()
+        self.connect = self.dbManager.getConnection()
+        self.cur = self.dbManager.getCursor()
     
     def signUp(self, name, birth_str, age, gender, id, pw, email):
         self.cur.execute("""
@@ -32,7 +33,7 @@ class UserDB:
         )
         
         self.connect.commit()
-        DBManager.close()
+        self.dbManager.close()
         return True
     
     def logIn(self, id, pw) :
@@ -43,6 +44,6 @@ class UserDB:
             """, {"id": id})
         status = self.cur.fetchone()
         
-        DBManager.close()
+        self.dbManager.close()
         if not status : return False
-        return True if status['USER_PASSWORD'] == pw else False
+        return True if status[1] == pw else False
