@@ -94,6 +94,28 @@ function pushTodayToHistory() {
   saveTodayData();
 }
 
+// HH:MM 형식 시작/종료 시각으로 전체 수면 시간 계산 (자정 넘어가는 것도 처리)
+function calcSleepDuration(startTime, endTime) {
+  if (!startTime || !endTime) return { hours: 0, minutes: 0 };
+
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+
+  let startMin = sh * 60 + sm;
+  let endMin = eh * 60 + em;
+
+  // 종료 시간이 시작보다 이르면 다음날로 간주
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
+  }
+
+  const total = endMin - startMin;
+  const hours = Math.floor(total / 60);
+  const minutes = total % 60;
+
+  return { hours, minutes };
+}
+
 // key별 오늘값 매핑
 function getHistoryValueForToday(key) {
   switch(key) {
@@ -300,29 +322,61 @@ function loadPage(page) {
 function renderSleepPage() {
   const container = document.getElementById('content-container');
   loadTodayData();
-  const { hours, minutes } = dataStore.today.sleep;
-  
+  const { start, end, hours, minutes } = dataStore.today.sleep;
+
   container.innerHTML = `
     <section class="card">
       <div class="card-title">Sleep Data</div>
-      <div style="padding:20px;">
-        <label>수면 시간 (시간):</label>
-        <input type="number" id="sleep-hours" value="${hours}" min="0" max="24" style="width:100px;padding:8px;margin:10px 0;" />
+      <div style="padding:20px; display:flex; flex-direction:column; gap:12px; max-width:420px;">
         
-        <label>수면 시간 (분):</label>
-        <input type="number" id="sleep-minutes" value="${minutes}" min="0" max="59" style="width:100px;padding:8px;margin:10px 0;" />
-        
-        <button id="save-sleep-btn" style="padding:10px 20px;background:#2a9df4;color:white;border:none;border-radius:4px;cursor:pointer;margin-top:10px;">저장</button>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <label style="min-width:90px;">수면 시작 시간:</label>
+          <input type="time" id="sleep-start" value="${start || ''}"
+                 style="flex:1; padding:8px; border-radius:8px; border:1px solid #d1d5db;" />
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <label style="min-width:90px;">수면 종료 시간:</label>
+          <input type="time" id="sleep-end" value="${end || ''}"
+                 style="flex:1; padding:8px; border-radius:8px; border:1px solid #d1d5db;" />
+        </div>
+
+        <div style="font-size:14px; color:#6b7280;">
+          현재 저장된 수면 시간: 
+          <strong>${hours}h ${minutes}m</strong>
+        </div>
+
+        <button id="save-sleep-btn"
+          style="align-self:flex-start; padding:10px 20px; background:#2a9df4; color:white;
+                 border:none; border-radius:8px; cursor:pointer; margin-top:4px;">
+          저장
+        </button>
       </div>
     </section>
   `;
-  
+
   document.getElementById('save-sleep-btn').addEventListener('click', () => {
-    dataStore.today.sleep.hours = parseInt(document.getElementById('sleep-hours').value) || 0;
-    dataStore.today.sleep.minutes = parseInt(document.getElementById('sleep-minutes').value) || 0;
+    const startTime = document.getElementById('sleep-start').value;
+    const endTime   = document.getElementById('sleep-end').value;
+
+    if (!startTime || !endTime) {
+      alert('수면 시작 시간과 종료 시간을 모두 입력해 주세요.');
+      return;
+    }
+
+    const { hours, minutes } = calcSleepDuration(startTime, endTime);
+
+    dataStore.today.sleep.start = startTime;
+    dataStore.today.sleep.end   = endTime;
+    dataStore.today.sleep.hours = hours;
+    dataStore.today.sleep.minutes = minutes;
+
     pushTodayToHistory();
+    saveTodayData();
     updateDashboard();
     updateCharts();
+
+    alert(`수면 시간이 저장되었습니다. (총 ${hours}시간 ${minutes}분)`);
     loadPage('dashboard');
   });
 }
