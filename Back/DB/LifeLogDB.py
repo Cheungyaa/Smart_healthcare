@@ -5,7 +5,7 @@ class LifeLogDB:
         self.connect = DBManager.getConnection()
         self.cur = DBManager.getCursor()
     
-    def addActualLSleep(self, user_id, start, end):
+    def addActualSleep(self, user_id, start, end):
         interval = end - start
         
         self.cur.execute("""
@@ -23,7 +23,7 @@ class LifeLogDB:
         DBManager.close()
         return True
     
-    def getActualLSleep(self, user_id, start, end):
+    def getActualSleep(self, user_id, start, end):
         self.cur.execute("""
             SELECT * FROM sleep_actual
             WHERE user_id = :user_id
@@ -33,7 +33,7 @@ class LifeLogDB:
         DBManager.close()
         return self.cur.fetchall()
     
-    def addTargetLSleep(self, user_id, interval):
+    def addTargetSleep(self, user_id, interval):
         if self.getTargetSleep(user_id):
             self.cur.execute("""
                 UPDATE sleep_target
