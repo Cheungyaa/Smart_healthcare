@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="main.css" />
   <!-- Chart.js CDN 추가 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 
 <body>
@@ -87,7 +88,8 @@
             <div class="chart-content">
               <div class="card-title">수면 & 활동 추이 (최근 7일)</div>
               <div class="chart-placeholder">
-                데이터 영역 (차트는 로그인 후 표시됩니다)
+                <!-- 차트가 들어갈 캔버스 -->
+                <canvas id="sleepChart"></canvas>
               </div>
             </div>
           </div>

@@ -208,7 +208,8 @@ body {
 
 /* 그래프 박스 */
 .chart-placeholder {
-  height: 180px;       /* ★ 조금 더 키워서 아래 빈 공간 줄이기 */
+  height: 180px; 
+  width: 35vw;      /* ★ 조금 더 키워서 아래 빈 공간 줄이기 */
   border-radius: 10px;
   background: linear-gradient(to bottom, #edf2ff, #ffffff);
   border: 1px solid #e5e7eb;

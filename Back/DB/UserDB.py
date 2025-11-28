@@ -43,7 +43,8 @@ class UserDB:
             WHERE user_id = :id
             """, {"id": id})
         status = self.cur.fetchone()
+        print(status)
         
         self.dbManager.close()
         if not status : return False
-        return True if status[1] == pw else False
+        return True if status["user_password"] == pw else False

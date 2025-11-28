@@ -26,17 +26,18 @@ class BodyInfoDB:
             WHERE user_id = :user_id
             """, {"user_id": user_id})
         
+        result = self.cur.fetchone()
         self.dbManager.close()
-        return self.cur.fetchone()
+        return result
     
     def deleteAllData(self, user_id):
-        life_log = ["sleep_actual", "sleep_target", "steps", "heart_rate"]
+        life_log = ["sleep_actual", "sleep_target", "steps", "heart_rate", "food_log"]
         
         for table in life_log:
-            self.cur.execute("""
-                DELETE FROM :table
+            self.cur.execute(f"""
+                DELETE FROM {table}
                 WHERE user_id = :user_id
-                """, {"user_id": user_id, "table": table})
+                """, {"user_id": user_id})
         
         self.connect.commit()
         self.dbManager.close()

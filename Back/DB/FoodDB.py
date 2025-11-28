@@ -12,12 +12,13 @@ class FoodDB:
             WHERE user_id = :user_id
             """, {"user_id": user_id})
         
+        result = self.cur.fetchall()
         self.dbManager.close()
-        return self.cur.fetchall()
+        return result
     
     def addFoodLog(self, user_id, food_name, food_weight):
         self.cur.execute("""
-            SELECT food_calories
+            SELECT calories_per_gram
             FROM food
             WHERE food_name = :food_name
             """, {"food_name": food_name})
@@ -26,10 +27,10 @@ class FoodDB:
         if (not food_g_calories):
             return False
         
-        food_calories = food_g_calories["food_calories"] * food_weight
+        food_calories = food_g_calories["calories_per_gram"] * food_weight
         
         self.cur.execute("""
-            INSERT INTO food (user_id, food_name, food_weight, food_calories, recorded_at)
+            INSERT INTO food_log (user_id, food_name, food_weight, food_calories, recorded_at)
             VALUES (:user_id, :food_name, :food_weight, :food_calories, SYSDATE)
             """, {
                 "user_id": user_id, 
@@ -43,12 +44,13 @@ class FoodDB:
         self.dbManager.close()
         return True
     
-    def getFoodLog(self, user_id, start, end):
+    def getFoodLog(self, user_id, start_time, end_time):
         self.cur.execute("""
-            SELECT * FROM food
+            SELECT * FROM food_log
             WHERE user_id = :user_id
-            AND recorded_at BETWEEN :start AND :end
-            """, {"user_id": user_id, "start": start, "end": end})
+            AND recorded_at BETWEEN :start_time AND :end_time
+            """, {"user_id": user_id, "start_time": start_time, "end_time": end_time})
         
+        result = self.cur.fetchall()
         self.dbManager.close()
-        return self.cur.fetchall()
+        return result

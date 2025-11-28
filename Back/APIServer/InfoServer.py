@@ -37,39 +37,39 @@ class InfoServer:
             
             bodyInfoDB = BodyInfoDB()
             body_info = bodyInfoDB.getBodyInfo(user_id)
-            body_info.replace("\n", "").replace("\r", "")
             return jsonify(body_info)
 
         @self.app.post("/addActualSleep")
         def addActualSleep():
             data = request.json
-            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
-            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
+            start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
-            flag = lifeLogDB.addActualSleep(user_id, start, end)
+            flag = lifeLogDB.addActualSleep(user_id, start_time, end_time)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
             
         @self.app.post("/getActualSleep")
         def getActualSleep():
             data = request.json
-            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
-            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
+            start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
-            actual_sleep = lifeLogDB.getActualSleep(user_id, start, end)
-            actual_sleep.replace("\n", "").replace("\r", "")
+            actual_sleep = lifeLogDB.getActualSleep(user_id, start_time, end_time)
+            for i in range(len(actual_sleep)):
+                actual_sleep[i]["actual_sleep_time"] = str(actual_sleep[i]["actual_sleep_time"])
             return jsonify(actual_sleep)
             
         @self.app.post("/addTargetSleep")
         def addTargetSleep():
             data = request.json
-            user_id, interval = (data.get("user_id"), data.get("interval"))
+            user_id, interval_time = (data.get("user_id"), data.get("interval_time"))
             
             lifeLogDB = LifeLogDB()
-            flag = lifeLogDB.addTargetSleep(user_id, interval)
+            flag = lifeLogDB.addTargetSleep(user_id, interval_time)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
             
         @self.app.post("/getTargetSleep")
@@ -79,7 +79,6 @@ class InfoServer:
             
             lifeLogDB = LifeLogDB()
             target_sleep = lifeLogDB.getTargetSleep(user_id)
-            target_sleep.replace("\n", "").replace("\r", "")
             return jsonify(target_sleep)
             
         @self.app.post("/addSteps")
@@ -94,13 +93,12 @@ class InfoServer:
         @self.app.post("/getSteps")
         def getSteps():
             data = request.json
-            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
-            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
+            start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
-            steps = lifeLogDB.getSteps(user_id, start, end)
-            steps.replace("\n", "").replace("\r", "")
+            steps = lifeLogDB.getSteps(user_id, start_time, end_time)
             return jsonify(steps)
             
         @self.app.post("/addHeartRate")
@@ -115,13 +113,12 @@ class InfoServer:
         @self.app.post("/getHeartRate")
         def getHeartRate():
             data = request.json
-            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
-            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
+            start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
             
             lifeLogDB = LifeLogDB()
-            heart_rate = lifeLogDB.getHeartRate(user_id, start, end)
-            heart_rate.replace("\n", "").replace("\r", "")
+            heart_rate = lifeLogDB.getHeartRate(user_id, start_time, end_time)
             return jsonify(heart_rate)
         
         @self.app.post("/addFoodLog")
@@ -136,13 +133,12 @@ class InfoServer:
         @self.app.post("/getFoodLog")
         def getFoodLog():
             data = request.json
-            user_id, start, end = (data.get("user_id"), data.get("start"), data.get("end"))
-            start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-            end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+            user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
+            start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
             
             foodDB = FoodDB()
-            food_log = foodDB.getFoodLog(user_id, start, end)
-            food_log.replace("\n", "").replace("\r", "")
+            food_log = foodDB.getFoodLog(user_id, start_time, end_time)
             return jsonify(food_log)
         
         @self.app.post("/deleteAllData")
