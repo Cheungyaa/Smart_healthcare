@@ -16,7 +16,7 @@ class FoodDB:
         self.dbManager.close()
         return result
     
-    def addFoodLog(self, user_id, food_name, food_weight, timestamp):
+    def addFoodLog(self, user_id, food_name, food_weight):
         self.cur.execute("""
             SELECT calories_per_gram
             FROM food
@@ -31,16 +31,14 @@ class FoodDB:
         
         self.cur.execute("""
             INSERT INTO food_log (user_id, food_name, food_weight, food_calories, recorded_at)
-            VALUES (:user_id, :food_name, :food_weight, :food_calories, :recorded_at)
+            VALUES (:user_id, :food_name, :food_weight, :food_calories, SYSDATE)
             """, {
                 "user_id": user_id, 
                 "food_name": food_name, 
                 "food_weight": food_weight, 
-                "food_calories": food_calories,
-                "recorded_at": timestamp
+                "food_calories": food_calories
             }
         )
-        
         
         self.connect.commit()
         self.dbManager.close()

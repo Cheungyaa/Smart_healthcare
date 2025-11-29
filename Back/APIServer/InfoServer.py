@@ -128,10 +128,10 @@ class InfoServer:
         @app.post("/addFoodLog")
         def addFoodLog():
             data = request.json
-            user_id, food_name, food_weight, timestamp = (data.get("user_id"), data.get("food_name"), data.get("food_weight"), data.get("timestamp"))
+            user_id, food_name, food_weight = (data.get("user_id"), data.get("food_name"), data.get("food_weight"))
             
             foodDB = FoodDB()
-            flag = foodDB.addFoodLog(user_id, food_name, food_weight, timestamp)
+            flag = foodDB.addFoodLog(user_id, food_name, food_weight)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
         
         @app.post("/getFoodLog")

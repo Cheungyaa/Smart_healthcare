@@ -492,20 +492,7 @@ function drawCharts() {
       },
       options: {
         responsive: true,
-        scales: { 
-          x: {
-            ticks: {
-              // YYYY. MM. DD -> MM.DD
-              callback: function (value, index, ticks) {
-                const label = this.getLabelForValue(value);
-                const parts = label.split(".");
-                const mm = parts[1].trim().padStart(2, "0");
-                const dd = parts[2].trim().padStart(2, "0");
-                return `${mm}.${dd}`;
-              }
-            }
-          },
-          y: { title: { display: true, text: 'BMI' } } },
+        scales: { y: { title: { display: true, text: 'BMI' } } },
         plugins: { legend: { display: false } }
       }
     });
