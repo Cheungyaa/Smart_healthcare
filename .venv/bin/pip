@@ -1,9 +1,0 @@
-#!/bin/sh
-'''exec' "/Users/imhyeongtaeg/Library/Mobile Documents/com~apple~CloudDocs/01_Univercity/2025_2/02_데이터베이스/04_프로젝트/Smart_healthcare/.venv/bin/python3.14" "$0" "$@"
-' '''
-import sys
-from pip._internal.cli.main import main
-if __name__ == '__main__':
-    if sys.argv[0].endswith('.exe'):
-        sys.argv[0] = sys.argv[0][:-4]
-    sys.exit(main())
