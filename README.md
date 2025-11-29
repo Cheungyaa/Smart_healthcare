@@ -39,17 +39,6 @@
 ---
 
 
-### 🎯 sleep_target (목표 수면 시간)
-
-| 컬럼 | 타입 | 설명 |
-|------|------|------|
-| `user_id` | VARCHAR2(255) | FK → User |
-| `target_sleep_time` | INTERVAL DAY TO SECOND | 목표 수면 시간 |
-| ⛳ PK | `(user_id)` |
-
----
-
-
 ### 👣 steps (걸음 수 기록)
 
 | 컬럼 | 타입 | 설명 |
@@ -81,13 +70,36 @@
 | `gender` | NUMBER(1) | 0: 여성 🚺 / 1: 남성 🚹 |
 | `age` | NUMBER | 나이 |
 | `birth` | TIMESTAMP | 생년월일 🎂 |
-| `weight` | NUMBER | 체중 ⚖️ |
 | `height` | NUMBER | 키 📏 |
-| `bmi` | NUMBER | BMI |
 | `activity_factor` | NUMBER | 활동 지수 🏃 |
 | `blood_pressure_systolic` | NUMBER | 혈압 |
 | `blood_pressure_diastolic` | NUMBER | 혈압 |
 | ⛳ PK | `(user_id)` |
+
+---
+
+### Weight_log
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| user_id | VARCHAR2(255) | FK → User |
+| weight | NUMBER | 체중 ⚖️ |
+| bmi | NUMBER | BMI |
+| recorded_at | TIMESTAMP | 기록 시간 |
+| ⛳ PK | (user_id, recorded_at) |
+
+---
+
+### target
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| user_id | VARCHAR2(255) | FK → User |
+| weight | Number | 체중 ⚖️ |
+| sleep | INTERVAL DAY TO SECOND | 수면 시간 |
+| steps | Number | 걸음 수 👣 |
+| food | Number | 섭취 칼로리 |
+| ⛳ PK | (user_id) |
 
 ---
 
