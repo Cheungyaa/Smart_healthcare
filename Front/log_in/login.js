@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (result.message === 'success') {
           alert('로그인 성공!');
-          // sessionStorage에 로그인 상태와 사용자 ID 저장
-          sessionStorage.setItem('isLoggedIn', 'true');
-          sessionStorage.setItem('username', id);
+          // localStorage에 로그인 상태와 사용자 ID 저장
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('username', id);
           window.location.href = '../main/main.html'; // 메인 페이지로 이동
         } else {
           alert('아이디 또는 비밀번호가 일치하지 않습니다.');
