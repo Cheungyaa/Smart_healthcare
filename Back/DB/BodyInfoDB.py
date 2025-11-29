@@ -28,7 +28,7 @@ class BodyInfoDB:
         self.dbManager.close()
         return result
     
-    def addWeight(self, user_id, weight, recorded_at):
+    def addWeight(self, user_id, weight, time):
         self.cur.execute("""
             SELECT height FROM Body_info
             WHERE user_id = :user_id
@@ -39,21 +39,21 @@ class BodyInfoDB:
         
         self.cur.execute("""
             SELECT * FROM weight_log
-            WHERE user_id = :user_id
-            """, {"user_id": user_id})
+            WHERE user_id = :user_id AND time = :time
+            """, {"user_id": user_id, "time": time})
         result = self.cur.fetchone()
         
         if result:    
             self.cur.execute("""
                 UPDATE weight_log
-                SET weight = :weight, recorded_at = :recorded_at, bmi = :bmi
-                WHERE user_id = :user_id
-                """, {"user_id": user_id, "weight": weight, "bmi": bmi, "recorded_at": recorded_at})
+                SET weight = :weight, bmi = :bmi, time = :time, recorded_at = SYSDATE
+                WHERE user_id = :user_id AND time = :time
+                """, {"user_id": user_id, "weight": weight, "bmi": bmi, "time": time})
         else:
             self.cur.execute("""
-                INSERT INTO weight_log (user_id, weight, recorded_at, bmi)
-                VALUES (:user_id, :weight, :recorded_at, :bmi)
-                """, {"user_id": user_id, "weight": weight, "bmi": bmi, "recorded_at": recorded_at})
+                INSERT INTO weight_log (user_id, weight, bmi, time, recorded_at)
+                VALUES (:user_id, :weight, :bmi, :time, SYSDATE)
+                """, {"user_id": user_id, "weight": weight, "bmi": bmi, "time": time})
         
         self.connect.commit()
         self.dbManager.close()
@@ -61,9 +61,20 @@ class BodyInfoDB:
         
     def getWeight(self, user_id, start_time, end_time):
         self.cur.execute("""
-            SELECT * FROM weight_log
-            WHERE user_id = :user_id AND recorded_at BETWEEN :start_time AND :end_time
-            """, {"user_id": user_id, "start_time": start_time, "end_time": end_time})
+            SELECT * 
+            FROM (
+                SELECT t.*,
+                       ROW_NUMBER() OVER (
+                           PARTITION BY user_id, TRUNC(recorded_at)
+                           ORDER BY recorded_at DESC                         
+                       ) AS rn
+                FROM weight_log t
+                WHERE t.user_id = :user_id
+                  AND recorded_at >= :start_time
+                  AND recorded_at <= :end_time
+            )
+            WHERE rn = 1;
+        """, {"user_id": user_id, "start_time": start_time, "end_time": end_time})
         
         result = self.cur.fetchall()
         self.dbManager.close()

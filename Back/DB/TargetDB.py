@@ -6,7 +6,7 @@ class TargetDB:
         self.connect = self.dbManager.getConnection()
         self.cur = self.dbManager.getCursor()
     
-    def getTarget(self, user_id):
+    def getTargetClose(self, user_id):
         self.cur.execute("""
             SELECT * FROM target
             WHERE user_id = :user_id
@@ -16,6 +16,15 @@ class TargetDB:
         self.dbManager.close()
         return result
     
+    def getTarget(self, user_id):
+        self.cur.execute("""
+            SELECT * FROM target
+            WHERE user_id = :user_id
+            """, {"user_id": user_id})
+        
+        result = self.cur.fetchone()
+        return result
+    
     def initTarget(self, user_id):
         self.cur.execute("""
             INSERT INTO target (user_id)
@@ -23,7 +32,6 @@ class TargetDB:
             """, {"user_id": user_id})
         
         self.connect.commit()
-        self.dbManager.close()
         return True
     
     def addTargetSleep(self, user_id, target_sleep_time):

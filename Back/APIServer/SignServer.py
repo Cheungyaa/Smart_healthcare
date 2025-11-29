@@ -14,10 +14,6 @@ class SignServer:
         @app.get("/")
         def index():
             return jsonify({"message": "Smart Healthcare SignServer 정상 동작 중!"})
-        
-        @app.get("/test")
-        def test():
-            return jsonify({"message": "Server is connected"})
 
         @app.post("/SignUp")
         def signUp():

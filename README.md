@@ -62,6 +62,19 @@
 | `recorded_at` | TIMESTAMP | 서버 저장 시간 |
 | ⛳ PK | `(user_id, recorded_at)` |
 
+
+
+### Weight_log
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `user_id` | VARCHAR2(255) | FK → User |
+| `weight` | NUMBER | 체중 ⚖️ |
+| `bmi` | NUMBER | BMI |
+| `time` | TIMESTAMP | 기록 시간 |
+| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
+| ⛳ PK | (user_id, recorded_at) |
+
 ---
 
 ### 🧍 Body_info
@@ -77,19 +90,6 @@
 | `blood_pressure_systolic` | NUMBER | 혈압 |
 | `blood_pressure_diastolic` | NUMBER | 혈압 |
 | ⛳ PK | `(user_id)` |
-
----
-
-### Weight_log
-
-| 컬럼 | 타입 | 설명 |
-|------|------|------|
-| `user_id` | VARCHAR2(255) | FK → User |
-| `weight` | NUMBER | 체중 ⚖️ |
-| `bmi` | NUMBER | BMI |
-| `time` | TIMESTAMP | 기록 시간 |
-| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
-| ⛳ PK | (user_id, recorded_at) |
 
 ---
 
