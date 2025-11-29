@@ -1,0 +1,74 @@
+<div class="goal-container">
+  <h1 class="page-title">목표 설정</h1>
+  
+  <div class="goal-cards">
+    <!-- 수면 목표 -->
+    <div class="goal-card">
+      <div class="goal-header">
+        <h2 class="goal-title">
+          <span class="goal-icon">😴</span>
+          수면 시간
+        </h2>
+      </div>
+      <div class="goal-content">
+        <div class="goal-input-group">
+          <label for="sleep-hours">시간</label>
+          <input type="number" id="sleep-hours" min="0" max="12" value="7" class="goal-input-number">
+          <span class="goal-unit">시간</span>
+        </div>
+        <div class="goal-input-group">
+          <label for="sleep-minutes">분</label>
+          <input type="number" id="sleep-minutes" min="0" max="59" value="0" class="goal-input-number">
+          <span class="goal-unit">분</span>
+        </div>
+        <p class="goal-description">권장: 7시간</p>
+      </div>
+      <button class="goal-save-btn" data-goal="sleep">저장</button>
+    </div>
+
+    <!-- 걸음 수 목표 -->
+    <div class="goal-card">
+      <div class="goal-header">
+        <h2 class="goal-title">
+          <span class="goal-icon">👟</span>
+          걸음 수
+        </h2>
+      </div>
+      <div class="goal-content">
+        <div class="goal-input-group">
+          <input type="number" id="steps-target" min="0" value="10000" class="goal-input-number">
+          <span class="goal-unit">걸음</span>
+        </div>
+        <p class="goal-description">권장: 10,000걸음</p>
+      </div>
+      <button class="goal-save-btn" data-goal="steps">저장</button>
+    </div>
+
+    <!-- 칼로리 목표 -->
+    <div class="goal-card">
+      <div class="goal-header">
+        <h2 class="goal-title">
+          <span class="goal-icon">🍎</span>
+          섭취 칼로리
+        </h2>
+      </div>
+      <div class="goal-content">
+        <div class="goal-input-group">
+          <input type="number" id="kcal-target" min="0" value="2200" class="goal-input-number">
+          <span class="goal-unit">kcal</span>
+        </div>
+        <p class="goal-description">권장: 2,200 kcal</p>
+      </div>
+      <button class="goal-save-btn" data-goal="kcal">저장</button>
+    </div>
+  </div>
+
+  <div class="goal-info-box">
+    <h3>📌 목표 설정 안내</h3>
+    <ul>
+      <li>설정한 목표는 대시보드에 실시간으로 반영됩니다.</li>
+      <li>수면 시간, 걸음 수, 칼로리 목표를 원하는 대로 조정할 수 있습니다.</li>
+      <li>목표를 달성하면 대시보드에서 진행률을 확인할 수 있습니다.</li>
+    </ul>
+  </div>
+</div>

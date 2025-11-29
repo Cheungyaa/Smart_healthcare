@@ -51,8 +51,11 @@ const dataStore = {
     kcal: 0,
     bpm: 0,
     bmi: 0,
+    weight: 0,        // 오늘 몸무게
     foodLogs: []      // 음식: { food, weight, kcal }
   },
+
+  weightLogs: [],     // 날짜별 몸무게 기록: { date, weight }
 
   history: {
     labels: [],       // 날짜 라벨 (최근 7일)
@@ -67,11 +70,61 @@ const dataStore = {
     hours: 0,
     minutes: 0
   },
+
+  // 목표값 (localStorage에 저장됨)
+  goals: {
+    sleep: { hours: 7, minutes: 0 },      // 수면 목표
+    steps: 10000,                          // 걸음 수 목표
+    kcal: 2200,                            // 칼로리 목표
+    weight: 70                             // 몸무게 목표
+  }
 };
 
 // 로그인 체크 함수
 function isLoggedIn() {
   return !!localStorage.getItem('isLoggedIn');
+}
+
+// 목표값 불러오기
+function loadGoals() {
+  try {
+    const stored = localStorage.getItem('userGoals');
+    if (stored) {
+      dataStore.goals = JSON.parse(stored);
+    }
+  } catch (err) {
+    console.error('목표값 로드 실패:', err);
+  }
+}
+
+// 몸무게 기록 불러오기
+function loadWeightLogs() {
+  try {
+    const stored = localStorage.getItem('weightLogs');
+    if (stored) {
+      dataStore.weightLogs = JSON.parse(stored);
+    }
+  } catch (err) {
+    console.error('몸무게 기록 로드 실패:', err);
+  }
+}
+
+// 몸무게 기록 저장
+function saveWeightLogs() {
+  try {
+    localStorage.setItem('weightLogs', JSON.stringify(dataStore.weightLogs));
+  } catch (err) {
+    console.error('몸무게 기록 저장 실패:', err);
+  }
+}
+
+// 목표값 저장
+function saveGoals() {
+  try {
+    localStorage.setItem('userGoals', JSON.stringify(dataStore.goals));
+  } catch (err) {
+    console.error('목표값 저장 실패:', err);
+  }
 }
 
 /* ==========================
@@ -556,9 +609,14 @@ function updateDashboard() {
   setText('peer-my-steps', Number(dataStore.today.steps).toLocaleString());
   setText('peer-my-bmi', dataStore.today.bmi || '0');
 
+  // 동적 목표값 표시 - 대시보드 카드에 반영
+  setText('goal-sleep-display', `목표 ${dataStore.goals.sleep.hours}h ${dataStore.goals.sleep.minutes}m`);
+  setText('goal-steps-display', `목표 ${Number(dataStore.goals.steps).toLocaleString()}`);
+  setText('goal-kcal-display', `목표 ${dataStore.goals.kcal} kcal`);
+
   const elCalBar = document.getElementById('calorie-bar-fill');
   if (elCalBar) {
-    const percent = Math.min(Math.round((dataStore.today.kcal / 2200) * 100), 100);
+    const percent = Math.min(Math.round((dataStore.today.kcal / dataStore.goals.kcal) * 100), 100);
     elCalBar.style.width = percent + '%';
   }
 
@@ -570,19 +628,20 @@ function updateDashboard() {
     const insights = [];
     const sleepTotal = (Number(dataStore.today.sleep.hours) || 0) +
       ((Number(dataStore.today.sleep.minutes) || 0) / 60);
+    const goalSleepTotal = dataStore.goals.sleep.hours + (dataStore.goals.sleep.minutes / 60);
 
-    if (sleepTotal < 6.5) insights.push('수면 시간이 또래보다 부족합니다. 취침 시간을 20~30분 앞당기는 것을 권장합니다.');
-    else if (sleepTotal < 7) insights.push('수면 시간이 약간 부족합니다. 수면 시간을 조금 늘려보세요.');
+    if (sleepTotal < goalSleepTotal - 1) insights.push('수면 시간이 목표보다 부족합니다. 취침 시간을 앞당기는 것을 권장합니다.');
+    else if (sleepTotal < goalSleepTotal) insights.push('수면 시간이 약간 부족합니다. 수면 시간을 조금 늘려보세요.');
     else insights.push('수면 시간이 양호합니다. 충분한 수면을 유지하세요.');
 
     const steps = Number(dataStore.today.steps) || 0;
-    if (steps < 5000) insights.push('오늘 걸음 수가 낮습니다. 가벼운 산책을 권장합니다.');
-    else if (steps < 10000) insights.push('활동량이 보통입니다. 목표 걸음 수 달성을 시도해 보세요.');
+    if (steps < dataStore.goals.steps * 0.5) insights.push('오늘 걸음 수가 목표의 절반 이하입니다. 더 활동적으로 움직여 보세요.');
+    else if (steps < dataStore.goals.steps) insights.push(`활동량이 보통입니다. 목표까지 약 ${(dataStore.goals.steps - steps).toLocaleString()}걸음 남았습니다.`);
     else insights.push('목표 걸음 수 달성했습니다. 계속 유지하세요.');
 
     const kcal = Number(dataStore.today.kcal) || 0;
-    if (kcal > 2600) insights.push('칼로리 섭취가 권장량을 초과했습니다. 섭취량을 조절하세요.');
-    else if (kcal > 2200) insights.push('칼로리 섭취가 권장량에 근접합니다. 균형 있게 유지하세요.');
+    if (kcal > dataStore.goals.kcal * 1.2) insights.push('칼로리 섭취가 목표를 초과했습니다. 섭취량을 조절하세요.');
+    else if (kcal > dataStore.goals.kcal) insights.push('칼로리 섭취가 목표에 근접합니다. 균형 있게 유지하세요.');
     else insights.push('칼로리 섭취가 적절합니다.');
 
     const bpm = Number(dataStore.today.bpm) || 0;
@@ -627,6 +686,8 @@ function loadPage(page) {
   if (page === 'activity') { renderActivityPage(); return; }
   if (page === 'nutrition') { renderNutritionPage(); return; }
   if (page === 'body-info') { renderBodyInfoPage(); return; }
+  if (page === 'weight') { renderWeightPage(); return; }
+  if (page === 'goal') { renderGoalPage(); return; }
   if (page === 'settings') { renderSettingsPage(); return; }
 }
 
@@ -1119,6 +1180,250 @@ function renderBodyInfoPage() {
 }
 
 /* ==========================
+   Weight 페이지
+   ========================== */
+
+function renderWeightPage() {
+  const container = document.getElementById('content-container');
+  loadWeightLogs();
+  
+  const todayStr = formatDate(new Date());
+  const todayWeight = dataStore.weightLogs.find(log => log.date === todayStr);
+  
+  let htmlContent = `
+    <section class="card">
+      <div class="card-title">몸무게 관리</div>
+      <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
+        
+        <!-- 몸무게 입력 -->
+        <div>
+          <div style="display:flex; gap:12px; align-items:flex-end;">
+            <div>
+              <label style="display:block; margin-bottom:8px; font-weight:500;">날짜</label>
+              <input type="date" id="weight-date" value="${todayStr}" 
+                     style="padding:8px 10px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;" />
+            </div>
+            <div>
+              <label style="display:block; margin-bottom:8px; font-weight:500;">몸무게 (kg)</label>
+              <input type="number" id="weight-input" placeholder="70.5" step="0.1" min="0" 
+                     value="${todayWeight ? todayWeight.weight : ''}"
+                     style="padding:8px 10px; border-radius:8px; border:1px solid #d1d5db; font-size:14px; width:100px;" />
+            </div>
+            <button id="add-weight-btn" style="padding:10px 20px; background:#38bdf8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+              추가
+            </button>
+          </div>
+        </div>
+
+        <!-- 최근 기록 -->
+        <div>
+          <h3 style="margin:0 0 12px 0; font-size:16px; font-weight:600;">최근 기록</h3>
+          <div id="weight-list" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;">
+  `;
+
+  if (dataStore.weightLogs.length === 0) {
+    htmlContent += '<p style="color:#9ca3af; font-size:14px;">등록된 몸무게 기록이 없습니다.</p>';
+  } else {
+    // 최신순으로 정렬
+    const sorted = [...dataStore.weightLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+    sorted.forEach(log => {
+      const dateObj = new Date(log.date + 'T00:00:00');
+      const dateStr = dateObj.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', weekday: 'short' });
+      const deleteBtn = `<button class="delete-weight-btn" data-date="${log.date}" style="padding:4px 8px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size:12px;">삭제</button>`;
+      htmlContent += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f3f4f6; border-radius:8px;">
+          <div style="font-weight:500;">${dateStr}</div>
+          <div style="font-size:18px; font-weight:600; color:#38bdf8;">${log.weight} kg</div>
+          ${deleteBtn}
+        </div>
+      `;
+    });
+  }
+
+  htmlContent += `
+            </div>
+        </div>
+      </div>
+    </section>
+  `;
+
+  container.innerHTML = htmlContent;
+
+  // 추가 버튼 이벤트
+  document.getElementById('add-weight-btn').addEventListener('click', () => {
+    const date = document.getElementById('weight-date').value;
+    const weight = parseFloat(document.getElementById('weight-input').value);
+    
+    if (!date || isNaN(weight) || weight <= 0) {
+      alert('올바른 날짜와 몸무게를 입력해주세요.');
+      return;
+    }
+
+    // 기존 기록 있으면 업데이트, 없으면 추가
+    const existingIndex = dataStore.weightLogs.findIndex(log => log.date === date);
+    if (existingIndex !== -1) {
+      dataStore.weightLogs[existingIndex].weight = weight;
+    } else {
+      dataStore.weightLogs.push({ date, weight });
+    }
+
+    saveWeightLogs();
+    alert('몸무게가 저장되었습니다!');
+    renderWeightPage(); // 페이지 새로고침
+  });
+
+  // 삭제 버튼 이벤트
+  document.querySelectorAll('.delete-weight-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const date = e.target.dataset.date;
+      if (confirm('이 기록을 삭제하시겠습니까?')) {
+        dataStore.weightLogs = dataStore.weightLogs.filter(log => log.date !== date);
+        saveWeightLogs();
+        renderWeightPage();
+      }
+    });
+  });
+}
+
+/* ==========================
+   Goal 페이지
+   ========================== */
+
+function renderGoalPage() {
+  const container = document.getElementById('content-container');
+  
+  container.innerHTML = `
+    <div class="goal-container">
+      <h1 class="page-title">목표 설정</h1>
+      
+      <div class="goal-cards">
+        <!-- 수면 목표 -->
+        <div class="goal-card">
+          <div class="goal-header">
+            <h2 class="goal-title">
+              <span class="goal-icon">😴</span>
+              수면 시간
+            </h2>
+          </div>
+          <div class="goal-content">
+            <div class="goal-input-group">
+              <label for="sleep-hours">시간</label>
+              <input type="number" id="sleep-hours" min="0" max="12" value="${dataStore.goals.sleep.hours}" class="goal-input-number">
+              <span class="goal-unit">시간</span>
+            </div>
+            <div class="goal-input-group">
+              <label for="sleep-minutes">분</label>
+              <input type="number" id="sleep-minutes" min="0" max="59" value="${dataStore.goals.sleep.minutes}" class="goal-input-number">
+              <span class="goal-unit">분</span>
+            </div>
+            <p class="goal-description">권장: 7시간</p>
+          </div>
+          <button class="goal-save-btn" data-goal="sleep">저장</button>
+        </div>
+
+        <!-- 걸음 수 목표 -->
+        <div class="goal-card">
+          <div class="goal-header">
+            <h2 class="goal-title">
+              <span class="goal-icon">👟</span>
+              걸음 수
+            </h2>
+          </div>
+          <div class="goal-content">
+            <div class="goal-input-group">
+              <input type="number" id="steps-target" min="0" value="${dataStore.goals.steps}" class="goal-input-number">
+              <span class="goal-unit">걸음</span>
+            </div>
+            <p class="goal-description">권장: 10,000걸음</p>
+          </div>
+          <button class="goal-save-btn" data-goal="steps">저장</button>
+        </div>
+
+        <!-- 칼로리 목표 -->
+        <div class="goal-card">
+          <div class="goal-header">
+            <h2 class="goal-title">
+              <span class="goal-icon">🍎</span>
+              섭취 칼로리
+            </h2>
+          </div>
+          <div class="goal-content">
+            <div class="goal-input-group">
+              <input type="number" id="kcal-target" min="0" value="${dataStore.goals.kcal}" class="goal-input-number">
+              <span class="goal-unit">kcal</span>
+            </div>
+            <p class="goal-description">권장: 2,200 kcal</p>
+          </div>
+          <button class="goal-save-btn" data-goal="kcal">저장</button>
+        </div>
+
+        <!-- 몸무게 목표 -->
+        <div class="goal-card">
+          <div class="goal-header">
+            <h2 class="goal-title">
+              <span class="goal-icon">⚖️</span>
+              목표 몸무게
+            </h2>
+          </div>
+          <div class="goal-content">
+            <div class="goal-input-group">
+              <input type="number" id="weight-target" min="0" step="0.1" value="${dataStore.goals.weight}" class="goal-input-number">
+              <span class="goal-unit">kg</span>
+            </div>
+            <p class="goal-description">현재 건강한 체중 설정</p>
+          </div>
+          <button class="goal-save-btn" data-goal="weight">저장</button>
+        </div>
+      </div>
+
+      <div class="goal-info-box">
+        <h3>📌 목표 설정 안내</h3>
+        <ul>
+          <li>설정한 목표는 대시보드에 실시간으로 반영됩니다.</li>
+          <li>수면 시간, 걸음 수, 칼로리 목표를 원하는 대로 조정할 수 있습니다.</li>
+          <li>목표를 달성하면 대시보드에서 진행률을 확인할 수 있습니다.</li>
+        </ul>
+      </div>
+      <div class="goal-success-message" id="goal-success-message">목표가 저장되었습니다!</div>
+    </div>
+  `;
+
+  // 저장 버튼 이벤트 핸들러
+  document.querySelectorAll('.goal-save-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const goalType = btn.dataset.goal;
+      
+      if (goalType === 'sleep') {
+        const hours = parseInt(document.getElementById('sleep-hours').value) || 0;
+        const minutes = parseInt(document.getElementById('sleep-minutes').value) || 0;
+        dataStore.goals.sleep = { hours, minutes };
+      } else if (goalType === 'steps') {
+        dataStore.goals.steps = parseInt(document.getElementById('steps-target').value) || 0;
+      } else if (goalType === 'kcal') {
+        dataStore.goals.kcal = parseInt(document.getElementById('kcal-target').value) || 0;
+      } else if (goalType === 'weight') {
+        dataStore.goals.weight = parseFloat(document.getElementById('weight-target').value) || 0;
+      }
+      
+      // 저장
+      saveGoals();
+      
+      // 성공 메시지 표시
+      const msgEl = document.getElementById('goal-success-message');
+      if (msgEl) {
+        msgEl.classList.add('show');
+        setTimeout(() => {
+          msgEl.classList.remove('show');
+        }, 2500);
+      }
+      
+      // 대시보드 업데이트
+      updateDashboard();
+    });
+  });
+}
+
+/* ==========================
    Settings 페이지
    ========================== */
 
@@ -1189,6 +1494,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const signupButton = document.getElementById("signup-btn");
   if (signupButton) signupButton.addEventListener("click", () => { window.location.href = "../Sign_in/Sign_in.html"; });
 
+  loadGoals();
+  loadWeightLogs();  // 몸무게 기록 로드
   await loadTodayData();
   updateDashboard();
 });
