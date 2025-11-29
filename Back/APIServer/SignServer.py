@@ -3,19 +3,23 @@ from flask_cors import CORS
 
 from ..DB.UserDB import UserDB
 
+app = Flask(__name__)
+CORS(app)
+
 class SignServer:
     def __init__(self):
-        self.app = Flask(__name__)
-        CORS(self.app)
         self.add_routes()
-        self.app.run(host="0.0.0.0", port=7002)
 
     def add_routes(self):
-        @self.app.get("/test")
+        @app.get("/")
+        def index():
+            return jsonify({"message": "Smart Healthcare SignServer 정상 동작 중!"})
+        
+        @app.get("/test")
         def test():
             return jsonify({"message": "Server is connected"})
 
-        @self.app.post("/SignUp")
+        @app.post("/SignUp")
         def signUp():
             data = request.json
             name, birth, age, gender_str, id, pw, email = (
@@ -29,7 +33,7 @@ class SignServer:
             flag = userDB.signUp(name, birth, age, gender, id, pw, email)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
             
-        @self.app.post("/LogIn")
+        @app.post("/LogIn")
         def logIn():
             data = request.json
             id, pw = (data.get("id"), data.get("pw"))
@@ -37,4 +41,3 @@ class SignServer:
             userDB = UserDB()
             flag = userDB.logIn(id, pw)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
-

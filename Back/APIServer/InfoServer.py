@@ -6,19 +6,23 @@ from ..DB.LifeLogDB import LifeLogDB
 from ..DB.BodyInfoDB import BodyInfoDB
 from ..DB.FoodDB import FoodDB
 
+app = Flask(__name__)
+CORS(app)
+
 class InfoServer:
     def __init__(self):
-        self.app = Flask(__name__)
-        CORS(self.app)
         self.add_routes()
-        self.app.run(host="0.0.0.0", port=7003)
 
     def add_routes(self):
-        @self.app.get("/test")
+        @app.get("/")
+        def index():
+            return jsonify({"message": "Smart Healthcare InfoServer 정상 동작 중!"})
+        
+        @app.get("/test")
         def test():
             return jsonify({"message": "Server is connected"})
         
-        @self.app.post("/addBodyInfo")
+        @app.post("/addBodyInfo")
         def addBodyInfo():
             data = request.json
             user_id, weight, height, activity_factor, blood_pressure_sys, blood_pressure_dia = (
@@ -30,7 +34,7 @@ class InfoServer:
             flag = bodyInfoDB.addBodyInfo(user_id, weight, height, activity_factor, blood_pressure_sys, blood_pressure_dia)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
         
-        @self.app.post("/getBodyInfo")
+        @app.post("/getBodyInfo")
         def getBodyInfo():
             data = request.json
             user_id = data.get("user_id")
@@ -39,7 +43,7 @@ class InfoServer:
             body_info = bodyInfoDB.getBodyInfo(user_id)
             return jsonify(body_info)
 
-        @self.app.post("/addActualSleep")
+        @app.post("/addActualSleep")
         def addActualSleep():
             data = request.json
             user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
@@ -50,7 +54,7 @@ class InfoServer:
             flag = lifeLogDB.addActualSleep(user_id, start_time, end_time)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
             
-        @self.app.post("/getActualSleep")
+        @app.post("/getActualSleep")
         def getActualSleep():
             data = request.json
             user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
@@ -63,7 +67,7 @@ class InfoServer:
                 actual_sleep[i]["actual_sleep_time"] = str(actual_sleep[i]["actual_sleep_time"])
             return jsonify(actual_sleep)
             
-        @self.app.post("/addTargetSleep")
+        @app.post("/addTargetSleep")
         def addTargetSleep():
             data = request.json
             user_id, interval_time = (data.get("user_id"), data.get("interval_time"))
@@ -72,7 +76,7 @@ class InfoServer:
             flag = lifeLogDB.addTargetSleep(user_id, interval_time)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
             
-        @self.app.post("/getTargetSleep")
+        @app.post("/getTargetSleep")
         def getTargetSleep():
             data = request.json
             user_id = data.get("user_id")
@@ -81,7 +85,7 @@ class InfoServer:
             target_sleep = lifeLogDB.getTargetSleep(user_id)
             return jsonify(target_sleep)
             
-        @self.app.post("/addSteps")
+        @app.post("/addSteps")
         def addSteps():
             data = request.json
             user_id, steps = (data.get("user_id"), data.get("steps"))
@@ -90,7 +94,7 @@ class InfoServer:
             flag = lifeLogDB.addSteps(user_id, steps)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
             
-        @self.app.post("/getSteps")
+        @app.post("/getSteps")
         def getSteps():
             data = request.json
             user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
@@ -101,7 +105,7 @@ class InfoServer:
             steps = lifeLogDB.getSteps(user_id, start_time, end_time)
             return jsonify(steps)
             
-        @self.app.post("/addHeartRate")
+        @app.post("/addHeartRate")
         def addHeartRate():
             data = request.json
             user_id, heart_rate = (data.get("user_id"), data.get("heart_rate"))
@@ -110,7 +114,7 @@ class InfoServer:
             flag = lifeLogDB.addHeartRate(user_id, heart_rate)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
         
-        @self.app.post("/getHeartRate")
+        @app.post("/getHeartRate")
         def getHeartRate():
             data = request.json
             user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
@@ -121,7 +125,7 @@ class InfoServer:
             heart_rate = lifeLogDB.getHeartRate(user_id, start_time, end_time)
             return jsonify(heart_rate)
         
-        @self.app.post("/addFoodLog")
+        @app.post("/addFoodLog")
         def addFoodLog():
             data = request.json
             user_id, food_name, food_weight = (data.get("user_id"), data.get("food_name"), data.get("food_weight"))
@@ -130,7 +134,7 @@ class InfoServer:
             flag = foodDB.addFoodLog(user_id, food_name, food_weight)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
         
-        @self.app.post("/getFoodLog")
+        @app.post("/getFoodLog")
         def getFoodLog():
             data = request.json
             user_id, start_time, end_time = (data.get("user_id"), data.get("start_time"), data.get("end_time"))
@@ -141,7 +145,7 @@ class InfoServer:
             food_log = foodDB.getFoodLog(user_id, start_time, end_time)
             return jsonify(food_log)
         
-        @self.app.post("/deleteAllData")
+        @app.post("/deleteAllData")
         def deleteAllData():
             data = request.json
             user_id = data.get("user_id")
