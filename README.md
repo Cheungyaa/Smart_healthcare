@@ -33,7 +33,7 @@
 | `actual_start_sleep_time` | TIMESTAMP | 실제 수면 시작 |
 | `actual_end_sleep_time` | TIMESTAMP | 실제 수면 종료 |
 | `actual_sleep_time` | INTERVAL DAY TO SECOND | 실제 수면 시간 |
-| `recorded_at` | TIMESTAMP | 기록 시간 |
+| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
 | ⛳ PK | `(user_id, recorded_at)` |
 
 ---
@@ -45,7 +45,8 @@
 |------|------|------|
 | `user_id` | VARCHAR2(255) | FK → User |
 | `steps` | NUMBER | 걸음 수 👣 |
-| `recorded_at` | TIMESTAMP | 기록 시간 |
+| `time` | TIMESTAMP | 기록 시간 |
+| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
 | ⛳ PK | `(user_id, recorded_at)` |
 
 ---
@@ -57,7 +58,8 @@
 |------|------|------|
 | `user_id` | VARCHAR2(255) | FK → User |
 | `heart_rate` | NUMBER | 심박수 ❤️ |
-| `recorded_at` | TIMESTAMP | 기록 시간 |
+| `time` | TIMESTAMP | 기록 시간 |
+| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
 | ⛳ PK | `(user_id, recorded_at)` |
 
 ---
@@ -82,10 +84,11 @@
 
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
-| user_id | VARCHAR2(255) | FK → User |
-| weight | NUMBER | 체중 ⚖️ |
-| bmi | NUMBER | BMI |
-| recorded_at | TIMESTAMP | 기록 시간 |
+| `user_id` | VARCHAR2(255) | FK → User |
+| `weight` | NUMBER | 체중 ⚖️ |
+| `bmi` | NUMBER | BMI |
+| `time` | TIMESTAMP | 기록 시간 |
+| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
 | ⛳ PK | (user_id, recorded_at) |
 
 ---
@@ -94,11 +97,11 @@
 
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
-| user_id | VARCHAR2(255) | FK → User |
-| weight | Number | 체중 ⚖️ |
-| sleep | INTERVAL DAY TO SECOND | 수면 시간 |
-| steps | Number | 걸음 수 👣 |
-| food | Number | 섭취 칼로리 |
+| `user_id` | VARCHAR2(255) | FK → User |
+| `weight` | NUMBER | 체중 ⚖️ |
+| `sleep` | INTERVAL DAY TO SECOND | 수면 시간 |
+| `steps` | NUMBER | 걸음 수 👣 |
+| `food` | NUMBER | 섭취 칼로리 |
 | ⛳ PK | (user_id) |
 
 ---
@@ -120,7 +123,8 @@
 | `food_name` | VARCHAR2(255) | FK → Food |
 | `food_weight` | NUMBER | 섭취량 (g) |
 | `food_calories` | NUMBER | 칼로리 총량 |
-| `recorded_at` | TIMESTAMP | 기록 시간 |
+| `time` | TIMESTAMP | 기록 시간 |
+| `recorded_at` | TIMESTAMP | 서버 저장 시간 |
 | ⛳ PK | `(user_id, recorded_at)` |
 
 ---
