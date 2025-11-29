@@ -634,6 +634,8 @@ function renderSleepPage() {
   loadTodayData();
   const { start, end, hours, minutes } = dataStore.today.sleep;
 
+  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜 "YYYY-MM-DD"
+
   const parseTime = (timeStr) => {
     if (!timeStr) return { ampm: 'AM', hour: '12', minute: '00' };
     const [h, m] = timeStr.split(':').map(Number);
@@ -665,7 +667,16 @@ function renderSleepPage() {
     <section class="card">
       <div class="card-title">Sleep Data</div>
       <div style="padding:20px; display:flex; flex-direction:column; gap:16px; max-width:600px;">
-        
+      
+      <!-- ✅ 기록 날짜 입력 -->
+        <div>
+          <label style="display:block; margin-bottom:8px; font-weight:500;">기록 날짜</label>
+          <input type="date"
+                 id="sleep-date"
+                 value="${todayStr}"
+                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;" />
+        </div>
+
         <!-- 수면 시작 시간 -->
         <div>
           <label style="display:block; margin-bottom:8px; font-weight:500;">수면 시작 시간</label>
@@ -795,10 +806,22 @@ function renderActivityPage() {
   loadTodayData();
   const { steps } = dataStore.today;
 
+  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜
+
   container.innerHTML = `
     <section class="card">
       <div class="card-title">Activity Data</div>
       <div style="padding:20px;">
+
+      <!-- ✅ 기록 날짜 입력 -->
+        <div style="margin-bottom:12px;">
+          <label style="display:block; margin-bottom:4px;">기록 날짜</label>
+          <input type="date"
+                 id="activity-date"
+                 value="${todayStr}"
+                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db;" />
+        </div>
+
         <label>걸음 수:</label>
         <input type="number" id="activity-steps" value="${steps}" min="0" style="width:200px;padding:8px;margin:10px 0;" />
         
@@ -849,6 +872,8 @@ function renderNutritionPage() {
   loadTodayData();
   const { foodLogs = [], kcal } = dataStore.today;
 
+  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜
+
   const optionsHtml = FOOD_NAMES
     .map(name => `<option value="${name}">${name}</option>`)
     .join("");
@@ -865,6 +890,16 @@ function renderNutritionPage() {
     <section class="card">
       <div class="card-title">Nutrition Data</div>
       <div style="padding:20px; display:flex; flex-direction:column; gap:14px; max-width:420px;">
+        
+      <!-- ✅ 기록 날짜 입력 -->
+        <div>
+          <label style="font-size:14px;">기록 날짜</label>
+          <input type="date"
+                 id="nutrition-date"
+                 value="${todayStr}"
+                 style="width:100%; padding:8px 10px; border-radius:8px;
+                        border:1px solid #d1d5db; margin-top:4px;" />
+        </div>
         
         <div>
           <label style="font-size:14px;">오늘까지 섭취한 총 칼로리</label>
@@ -994,10 +1029,22 @@ function renderBodyInfoPage() {
   loadTodayData();
   const { bpm } = dataStore.today;
 
+   const todayStr = formatDate(new Date());   // ✅ 오늘 날짜
+
   container.innerHTML = `
     <section class="card">
       <div class="card-title">Body Info Data</div>
       <div style="padding:20px;">
+
+      <!-- ✅ 기록 날짜 입력 -->
+        <div style="margin-bottom:12px;">
+          <label style="display:block; margin-bottom:4px;">기록 날짜</label>
+          <input type="date"
+                 id="body-date"
+                 value="${todayStr}"
+                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db;" />
+        </div>
+
         <label>평균 심박수 (bpm):</label>
         <input type="number" id="body-bpm" value="${bpm}" min="0" style="width:200px;padding:8px;margin:10px 0;" />
         
