@@ -106,8 +106,9 @@
             </div>
 
             <div class="card-title" style="margin-top:16px;">체중 추이</div>
-            <div class="chart-placeholder" style="height:80px;">
-              Weight / BMI Trend Placeholder
+            <div class="chart-placeholder" style="height:120px;">
+              <!-- 실제 체중/BMI 차트가 들어갈 캔버스 -->
+              <canvas id="weightChart"></canvas>
             </div>
           </div>
         </section>
@@ -164,7 +165,7 @@
   <script>
     // 로그인 상태 확인
     if (!localStorage.getItem("isLoggedIn")) {
-      // 로그인 없을 때는 대시보드 접근 제한(개발 중이면 주석 처리 가능)
+      // 개발 중이면 막지 말고 그대로 두기
       // alert("로그인 후 이용해주세요.");
       // window.location.href = "../log_in/login.html";
     } else {
