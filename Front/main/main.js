@@ -13,18 +13,14 @@ Front:
       - 기존 updateChart, initChart 없애고 drawChart 함수 하나로만 차트 그림
       - 수면 데이터는 분 단위로 그리고 표기는 시간:분 형식
     - 수면 데이터 입력받는 부분 시간 선택하는 걸로 바꿈
-    - hitory 수면 데이터 today랑 동일하게 {hours, minutes} 객체 배열로 바꿈
+    - history 수면 데이터 today랑 동일하게 {hours, minutes} 객체 배열로 바꿈
     - 서버 데이터 중심으로 돌아가게 데이터 로드 시 서버에서 우선적으로 가져오게 바꿈
 
-to-do:
+to-do (백엔드 작업 필요):
   - 몸무게, bmi 시간 별로 가져오게 DB 스키마 변경
   - 몸무게, bmi 가져오는 함수 구현
-  - 몸무게, bmi 추이 차트 구현
-  - 현재 구조에서 당일에만 데이터 입력이 가능하고 다른 날 데이터 입력이 불가
-      1. 하루에 여러 값이 입력 됐을 때, 몇몇 종목들은 하루에 마지막으로 저장된 값만 사용하도록 변경
-      2. 지금 서버는 서버에 데이터가 입력된 시간을 저장 -> 날짜까지 사용자한테 입력받아서 데이터를 기록
-
-** 구현한거 기준으로 다 잘 돌아감
+  - 몸무게, bmi 추이 차트 구현 (지금은 0으로만 그려짐)
+  - 하루에 여러 값이 입력 됐을 때, 하루 마지막 값만 사용하는 로직 백엔드/쿼리에서 처리
 */
 
 // 음식 이름 리스트
@@ -41,29 +37,30 @@ const FOOD_NAMES = [
   "호떡", "붕어빵", "풀빵", "찹쌀떡", "인절미", "꿀떡", "아메리카노", "카페라떼", "초코우유",
   "딸기우유", "바나나우유", "식빵", "크로아상", "도넛", "초코파이", "라떼빙수"
 ];
+
 // 데이터 저장/로드 (localStorage 사용)
 const dataStore = {
   today: {
     sleep: {
       hours: 0,
       minutes: 0,
-      start: "",     // 추가된 항목: 수면 시작 시간 (HH:MM)
-      end: ""        // 추가된 항목: 수면 종료 시간 (HH:MM)
+      start: "",     // 수면 시작 시간 (HH:MM)
+      end: ""        // 수면 종료 시간 (HH:MM)
     },
     steps: 0,
     kcal: 0,
     bpm: 0,
     bmi: 0,
-    foodLogs: []      // 음식: { food, weight, kcal }로 저장되는 리스트 (Nutrition 페이지에서 사용)
+    foodLogs: []      // 음식: { food, weight, kcal }
   },
 
   history: {
     labels: [],       // 날짜 라벨 (최근 7일)
-    sleep: [],        // 수면 시간(시간 단위)
+    sleep: [],        // [{hours, minutes}, ...]
     steps: [],
     kcal: [],
     bpm: [],
-    weight: []
+    weight: []        // 추후 BMI/체중 값
   },
 
   sleep_target: {
@@ -72,14 +69,18 @@ const dataStore = {
   },
 };
 
-// 로그인 체크 함수 (한 곳만)
+// 로그인 체크 함수
 function isLoggedIn() {
-  return !!sessionStorage.getItem('isLoggedIn');
+  return !!localStorage.getItem('isLoggedIn');
 }
 
-// 오늘 데이터 로드
+/* ==========================
+   데이터 로드/저장
+   ========================== */
+
+// 오늘 데이터 로드 (백엔드 우선)
 async function loadTodayData() {
-  const userId = sessionStorage.getItem('username');
+  const userId = localStorage.getItem('username');
 
   if (userId) {
     await loadTodayDataFromBackend(userId);
@@ -88,6 +89,7 @@ async function loadTodayData() {
     initializeEmptyHistory();
   }
 
+  // 수면 목표 시간 불러오기
   try {
     const res = await fetch(INFO_URL + '/getSleepTarget', {
       method: 'POST',
@@ -100,13 +102,14 @@ async function loadTodayData() {
       const [th, tm] = target.split(':').map(Number);
       dataStore.sleep_target.hours = th || 0;
       dataStore.sleep_target.minutes = tm || 0;
-    } 
+    }
   } catch (err) {
     console.error('수면 목표 시간 로드 실패:', err);
     dataStore.sleep_target.hours = 0;
     dataStore.sleep_target.minutes = 0;
   }
 }
+
 // 백엔드에서 오늘 데이터 가져오기
 async function loadTodayDataFromBackend(userId) {
   try {
@@ -118,7 +121,6 @@ async function loadTodayDataFromBackend(userId) {
     const start = formatDateTime(todayStart);
     const end = formatDateTime(todayEnd);
 
-    // 오늘의 데이터 가져오기
     const [sleep, steps, heartRate, foodLog] = await Promise.all([
       fetch(`${INFO_URL}/getActualSleep`, {
         method: 'POST',
@@ -145,7 +147,7 @@ async function loadTodayDataFromBackend(userId) {
       }).then(res => res.json()).catch(() => [])
     ]);
 
-    // 수면 시간 (HH:MM:SS 형식으로 받아옴)
+    // 수면 시간 (HH:MM:SS)
     if (sleep && sleep.length > 0) {
       const timeStr = sleep[0].actual_sleep_time || '00:00:00';
       const [hours, minutes] = timeStr.split(':').map(Number);
@@ -180,6 +182,7 @@ async function loadTodayDataFromBackend(userId) {
     console.error('DB|today data load failed:', err);
   }
 }
+
 // 백엔드에서 최근 7일 데이터 가져오기
 async function loadLast7DaysFromBackend(userId) {
   try {
@@ -188,7 +191,7 @@ async function loadLast7DaysFromBackend(userId) {
     const stepsData = [];
     const kcalData = [];
     const bpmData = [];
-    const weightData = [];
+    const weightData = []; // 추후 BMI/체중 값 채울 예정
 
     // 최근 7일 날짜 생성
     for (let i = 6; i >= 0; i--) {
@@ -204,7 +207,6 @@ async function loadLast7DaysFromBackend(userId) {
       const start = formatDateTime(dayStart);
       const end = formatDateTime(dayEnd);
 
-      // 각 날짜별 데이터 가져오기 (병렬 처리)
       const [sleep, steps, heartRate, foodLog] = await Promise.all([
         fetch(`${INFO_URL}/getActualSleep`, {
           method: 'POST',
@@ -231,13 +233,13 @@ async function loadLast7DaysFromBackend(userId) {
         }).then(res => res.json()).catch(() => [])
       ]);
 
-      // 수면 시간 계산 (시간 단위)
+      // 수면 시간 -> {hours, minutes}
       if (sleep && sleep.length > 0) {
         const timeStr = sleep[0].actual_sleep_time || '00:00:00';
         const [hours, minutes] = timeStr.split(':').map(Number);
-        sleepData.push({hours: hours || 0, minutes: minutes || 0});
+        sleepData.push({ hours: hours || 0, minutes: minutes || 0 });
       } else {
-        sleepData.push({hours: 0, minutes: 0});
+        sleepData.push({ hours: 0, minutes: 0 });
       }
 
       // 걸음 수
@@ -264,11 +266,10 @@ async function loadLast7DaysFromBackend(userId) {
         bpmData.push(0);
       }
 
-      // 체중/BMI (임시로 0)
+      // 체중/BMI (지금은 0, 백엔드 완성되면 여기 채우면 됨)
       weightData.push(0);
     }
 
-    // dataStore.history에 저장
     dataStore.history.labels = labels;
     dataStore.history.sleep = sleepData;
     dataStore.history.steps = stepsData;
@@ -276,16 +277,15 @@ async function loadLast7DaysFromBackend(userId) {
     dataStore.history.bpm = bpmData;
     dataStore.history.weight = weightData;
 
-    // localStorage에 저장
     saveTodayData();
-
     console.log('DB|last7days data load complete', dataStore.history);
   } catch (err) {
     console.error('DB|last7days data load failed:', err);
     initializeEmptyHistory();
   }
 }
-// 빈 history 초기화
+
+// 히스토리 비어있을 때 기본값
 function initializeEmptyHistory() {
   const labels = [];
   for (let i = 6; i >= 0; i--) {
@@ -294,46 +294,91 @@ function initializeEmptyHistory() {
     labels.push(d.toLocaleDateString());
   }
   dataStore.history.labels = labels;
-  dataStore.history.sleep = Array(7).fill({hours: 0, minutes: 0});
+  dataStore.history.sleep = Array.from({ length: 7 }, () => ({ hours: 0, minutes: 0 }));
   dataStore.history.steps = Array(7).fill(0);
   dataStore.history.kcal = Array(7).fill(0);
   dataStore.history.bpm = Array(7).fill(0);
   dataStore.history.weight = Array(7).fill(0);
-
 }
 
-// today 데이터 저장
+// today + history localStorage 저장
 function saveTodayData() {
-  // today 데이터 저장
-  sessionStorage.setItem('todayData', JSON.stringify({ today: dataStore.today }));
-  // history 저장
-  sessionStorage.setItem('todayHistory', JSON.stringify(dataStore.history));
+  localStorage.setItem('todayData', JSON.stringify({ today: dataStore.today }));
+  localStorage.setItem('todayHistory', JSON.stringify(dataStore.history));
 }
+
+// key별 오늘값 매핑 (sleep은 숫자값이 필요할 때만 사용)
+function getHistoryValueForToday(key) {
+  switch (key) {
+    case 'sleep':
+      return Number(dataStore.today.sleep.hours || 0) +
+        Number((dataStore.today.sleep.minutes || 0) / 60);
+    case 'steps': return Number(dataStore.today.steps || 0);
+    case 'kcal': return Number(dataStore.today.kcal || 0);
+    case 'bpm': return Number(dataStore.today.bpm || 0);
+    case 'weight': return Number(dataStore.today.bmi || 0);
+    default: return 0;
+  }
+}
+
 // history에 오늘 값 push (최대 7개 유지)
+// ✅ sleep은 {hours, minutes}, 나머지는 숫자로 관리
 function pushTodayToHistory() {
   const labels = dataStore.history.labels || [];
   const nowLabel = new Date().toLocaleDateString();
-  // labels: 마지막이 오늘이면 덮어쓰기, 아니면 push shift
+
+  const pushOrOverwrite = (key, valueObj, isSleep, lastIndex) => {
+    if (lastIndex === null) {
+      // push
+      if (isSleep) dataStore.history.sleep.push(valueObj);
+      else dataStore.history[key].push(valueObj);
+      if (dataStore.history[key].length > 7) dataStore.history[key].shift();
+    } else {
+      // overwrite
+      if (isSleep) dataStore.history.sleep[lastIndex] = valueObj;
+      else dataStore.history[key][lastIndex] = valueObj;
+    }
+  };
+
   if (labels.length === 0 || labels[labels.length - 1] !== nowLabel) {
     labels.push(nowLabel);
     if (labels.length > 7) labels.shift();
-    ['sleep', 'steps', 'kcal', 'bpm', 'weight'].forEach(key => {
-      dataStore.history[key].push(getHistoryValueForToday(key));
-      if (dataStore.history[key].length > 7) dataStore.history[key].shift();
+
+    // sleep: 객체로 push
+    pushOrOverwrite(
+      'sleep',
+      { hours: dataStore.today.sleep.hours || 0, minutes: dataStore.today.sleep.minutes || 0 },
+      true,
+      null
+    );
+
+    ['steps', 'kcal', 'bpm', 'weight'].forEach(key => {
+      pushOrOverwrite(key, getHistoryValueForToday(key), false, null);
     });
+
     dataStore.history.labels = labels;
   } else {
-    // 덮어쓰기
     const lastIndex = labels.length - 1;
-    ['sleep', 'steps', 'kcal', 'bpm', 'weight'].forEach(key => {
-      dataStore.history[key][lastIndex] = getHistoryValueForToday(key);
+
+    pushOrOverwrite(
+      'sleep',
+      { hours: dataStore.today.sleep.hours || 0, minutes: dataStore.today.sleep.minutes || 0 },
+      true,
+      lastIndex
+    );
+
+    ['steps', 'kcal', 'bpm', 'weight'].forEach(key => {
+      pushOrOverwrite(key, getHistoryValueForToday(key), false, lastIndex);
     });
   }
+
   saveTodayData();
 }
 
-// 날짜/시간 유틸리티 함수
-// Date 객체를 "YYYY-MM-DD HH:MM:SS" 형식으로 변환
+/* ==========================
+   날짜/시간 유틸
+   ========================== */
+
 function formatDateTime(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -343,14 +388,15 @@ function formatDateTime(date) {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
-// Date 객체를 "YYYY-MM-DD" 형식으로 변환
+
 function formatDate(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-// HH:MM 형식 시작/종료 시각으로 전체 수면 시간 계산 (자정 넘어가는 것도 처리)
+
+// HH:MM 형식 시작/종료 시각으로 전체 수면 시간 계산
 function calcSleepDuration(startTime, endTime) {
   if (!startTime || !endTime) return { hours: 0, minutes: 0 };
 
@@ -360,7 +406,6 @@ function calcSleepDuration(startTime, endTime) {
   let startMin = sh * 60 + sm;
   let endMin = eh * 60 + em;
 
-  // 종료 시간이 시작보다 이르면 다음날로 간주
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
@@ -372,39 +417,28 @@ function calcSleepDuration(startTime, endTime) {
   return { hours, minutes };
 }
 
-// key별 오늘값 매핑
-function getHistoryValueForToday(key) {
-  switch (key) {
-    case 'sleep': return Number(dataStore.today.sleep.hours || 0) + Number((dataStore.today.sleep.minutes || 0) / 60);
-    case 'steps': return Number(dataStore.today.steps || 0);
-    case 'kcal': return Number(dataStore.today.kcal || 0);
-    case 'bpm': return Number(dataStore.today.bpm || 0);
-    case 'weight': return Number(dataStore.today.bmi || 0); // 임시로 BMI 대신 weight 사용 가능
-    default: return 0;
-  }
-}
+/* ==========================
+   Chart.js
+   ========================== */
 
-// Chart 인스턴스 보관
 let sleepChart = null;
 let weightChart = null;
 
 function drawCharts() {
   const ctx = document.getElementById("sleepChart");
+  if (!ctx) return;
 
-  if (sleepChart) {
-    sleepChart.destroy();
-  }
+  if (sleepChart) sleepChart.destroy();
+
   const labels = dataStore.history.labels;
-  const sleepData = [];
-  for (const d of dataStore.history.sleep) {
-    sleepData.push(d.hours * 60 + d.minutes);
-  }
-  const targetData = Array(7).fill(dataStore.sleep_target.hours * 60 + dataStore.sleep_target.minutes); // 목표 수면 시간
+  const sleepData = dataStore.history.sleep.map(d => d.hours * 60 + d.minutes);
+  const targetMinutes = dataStore.sleep_target.hours * 60 + dataStore.sleep_target.minutes;
+  const targetData = Array(7).fill(targetMinutes);
 
   sleepChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: labels,
+      labels,
       datasets: [
         {
           label: "수면 시간",
@@ -420,7 +454,7 @@ function drawCharts() {
           yAxisID: "y1",
           borderColor: "#E24A4A",
           backgroundColor: "rgba(226, 74, 74, 0.2)",
-          borderDash: [5, 5], // 점선 (목표 선 표시)
+          borderDash: [5, 5],
           tension: 0
         }
       ]
@@ -431,8 +465,7 @@ function drawCharts() {
       scales: {
         x: {
           ticks: {
-            // YYYY. MM. DD -> MM.DD
-            callback: function (value, index, ticks) {
+            callback: function (value) {
               const label = this.getLabelForValue(value);
               const parts = label.split(".");
               const mm = parts[1].trim().padStart(2, "0");
@@ -443,27 +476,24 @@ function drawCharts() {
         },
         y1: {
           beginAtZero: true,
-          // 1시간 = 60분 단위로 눈금
           ticks: {
-            stepSize: 60,               // 60분씩 증가
+            stepSize: 60,
             callback: (value) => {
               const hours = value / 60;
               return `${hours}시간`;
             }
-          },
-          // min: 0,
-          // max: 12 * 60
+          }
         }
       },
       plugins: {
         tooltip: {
           callbacks: {
             label: (ctx) => {
-              const value = ctx.parsed.y;    // 분
+              const value = ctx.parsed.y;
               const h = Math.floor(value / 60);
               const m = value % 60;
               const formatted =
-                value === 0 ? "0분" : 
+                value === 0 ? "0분" :
                   m === 0 ? `${h}시간` : `${h}시간 ${m}분`;
               return `${ctx.dataset.label}: ${formatted}`;
             }
@@ -473,35 +503,44 @@ function drawCharts() {
     }
   });
 
-  // weightChart (BMI/체중)
+  // 체중/BMI 차트
   const ctx2 = document.getElementById('weightChart');
-  if (ctx2) {
-    weightChart = new Chart(ctx2, {
-      type: 'line',
-      data: {
-        labels: dataStore.history.labels,
-        datasets: [{
-          label: 'BMI/체중 (임시)',
-          data: dataStore.history.weight,
-          borderColor: '#1f7fd1',
-          backgroundColor: 'rgba(31,127,209,0.15)',
-          tension: 0.25,
-          fill: true,
-          pointRadius: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { y: { title: { display: true, text: 'BMI' } } },
-        plugins: { legend: { display: false } }
-      }
-    });
-  }
+  if (!ctx2) return;
+
+  if (weightChart) weightChart.destroy();
+
+  weightChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: dataStore.history.labels,
+      datasets: [{
+        label: 'BMI/체중',
+        data: dataStore.history.weight,
+        borderColor: '#1f7fd1',
+        backgroundColor: 'rgba(31,127,209,0.15)',
+        tension: 0.25,
+        fill: true,
+        pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { y: { title: { display: true, text: 'BMI' } } },
+      plugins: { legend: { display: false } }
+    }
+  });
 }
 
+/* ==========================
+   Dashboard UI 업데이트
+   ========================== */
+
 function updateDashboard() {
-  loadTodayData();
-  const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  const setText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
 
   setText('today-sleep', `${dataStore.today.sleep.hours}h ${dataStore.today.sleep.minutes}m`);
   setText('today-steps', Number(dataStore.today.steps).toLocaleString());
@@ -519,11 +558,14 @@ function updateDashboard() {
   }
 
   drawCharts();
-  
+
+  // 오늘의 인사이트
   const insightEl = document.getElementById('insight-text');
   if (insightEl) {
     const insights = [];
-    const sleepTotal = (Number(dataStore.today.sleep.hours) || 0) + ((Number(dataStore.today.sleep.minutes) || 0) / 60);
+    const sleepTotal = (Number(dataStore.today.sleep.hours) || 0) +
+      ((Number(dataStore.today.sleep.minutes) || 0) / 60);
+
     if (sleepTotal < 6.5) insights.push('수면 시간이 또래보다 부족합니다. 취침 시간을 20~30분 앞당기는 것을 권장합니다.');
     else if (sleepTotal < 7) insights.push('수면 시간이 약간 부족합니다. 수면 시간을 조금 늘려보세요.');
     else insights.push('수면 시간이 양호합니다. 충분한 수면을 유지하세요.');
@@ -545,6 +587,10 @@ function updateDashboard() {
     insightEl.innerHTML = insights.map(s => `· ${s}`).join('<br>');
   }
 }
+
+/* ==========================
+   페이지 전환
+   ========================== */
 
 // 사이드바 클릭 핸들러
 document.querySelectorAll(".nav-item").forEach(item => {
@@ -568,43 +614,28 @@ function loadPage(page) {
   }
 
   if (page === 'dashboard' || page === undefined) {
-    location.reload(); // Dashboard로 돌아가기
+    location.reload();
     return;
   }
 
-  if (page === 'sleep') {
-    renderSleepPage();
-    return;
-  }
-
-  if (page === 'activity') {
-    renderActivityPage();
-    return;
-  }
-
-  if (page === 'nutrition') {
-    renderNutritionPage();
-    return;
-  }
-
-  if (page === 'body-info') {
-    renderBodyInfoPage();
-    return;
-  }
-
-  if (page === 'settings') {
-    renderSettingsPage();
-    return;
-  }
+  if (page === 'sleep') { renderSleepPage(); return; }
+  if (page === 'activity') { renderActivityPage(); return; }
+  if (page === 'nutrition') { renderNutritionPage(); return; }
+  if (page === 'body-info') { renderBodyInfoPage(); return; }
+  if (page === 'settings') { renderSettingsPage(); return; }
 }
 
-// Sleep 페이지 렌더
+/* ==========================
+   Sleep 페이지
+   ========================== */
+
 function renderSleepPage() {
   const container = document.getElementById('content-container');
   loadTodayData();
   const { start, end, hours, minutes } = dataStore.today.sleep;
 
-  // 시간을 AM/PM, 시간, 분으로 파싱하는 헬퍼 함수
+  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜 "YYYY-MM-DD"
+
   const parseTime = (timeStr) => {
     if (!timeStr) return { ampm: 'AM', hour: '12', minute: '00' };
     const [h, m] = timeStr.split(':').map(Number);
@@ -620,13 +651,11 @@ function renderSleepPage() {
   const startParsed = parseTime(start);
   const endParsed = parseTime(end);
 
-  // 시간 옵션 생성 (1-12)
   const hourOptions = Array.from({ length: 12 }, (_, i) => {
     const h = String(i + 1).padStart(2, '0');
     return `<option value="${h}">${h}</option>`;
   }).join('');
 
-  // 분 옵션 생성 (00-55)
   const minuteOptions = Array.from({ length: 12 }, (_, i) => {
     const m = String(i * 5).padStart(2, '0');
     return `<option value="${m}">${m}</option>`;
@@ -638,7 +667,16 @@ function renderSleepPage() {
     <section class="card">
       <div class="card-title">Sleep Data</div>
       <div style="padding:20px; display:flex; flex-direction:column; gap:16px; max-width:600px;">
-        
+      
+      <!-- ✅ 기록 날짜 입력 -->
+        <div>
+          <label style="display:block; margin-bottom:8px; font-weight:500;">기록 날짜</label>
+          <input type="date"
+                 id="sleep-date"
+                 value="${todayStr}"
+                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;" />
+        </div>
+
         <!-- 수면 시작 시간 -->
         <div>
           <label style="display:block; margin-bottom:8px; font-weight:500;">수면 시작 시간</label>
@@ -689,14 +727,12 @@ function renderSleepPage() {
     </section>
   `;
 
-  // 저장된 값으로 select 설정
   document.getElementById('sleep-start-hour').value = startParsed.hour;
   document.getElementById('sleep-start-minute').value = startParsed.minute;
   document.getElementById('sleep-end-hour').value = endParsed.hour;
   document.getElementById('sleep-end-minute').value = endParsed.minute;
 
   document.getElementById('save-sleep-btn').addEventListener('click', async () => {
-    // 12시간 형식을 24시간 형식으로 변환
     const convertTo24Hour = (ampm, hour, minute) => {
       let h = parseInt(hour);
       if (ampm === 'AM' && h === 12) h = 0;
@@ -721,27 +757,25 @@ function renderSleepPage() {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    // 시작 시간이 종료 시간보다 늦으면 전날 잠든 것으로 간주
     const [startHour24] = startTime.split(':').map(Number);
     const [endHour24] = endTime.split(':').map(Number);
     const startDate = (startHour24 > endHour24 || startHour24 >= 18) ? formatDate(yesterday) : formatDate(today);
     const endDate = formatDate(today);
 
-    // DB 수면시간 저장
     try {
       const res = await fetch(`${INFO_URL}/addActualSleep`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: sessionStorage.getItem('username'),
+          user_id: localStorage.getItem('username'),
           start_time: `${startDate} ${startTime}:00`,
           end_time: `${endDate} ${endTime}:00`
         })
       });
 
-      const data = await res.json()
+      const data = await res.json();
       if (data.message === 'fail') {
-        throw new Error('DB Error')
+        throw new Error('DB Error');
       }
 
       dataStore.today.sleep.start = startTime;
@@ -763,16 +797,31 @@ function renderSleepPage() {
   });
 }
 
-// Activity 페이지 렌더
+/* ==========================
+   Activity 페이지
+   ========================== */
+
 function renderActivityPage() {
   const container = document.getElementById('content-container');
   loadTodayData();
   const { steps } = dataStore.today;
 
+  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜
+
   container.innerHTML = `
     <section class="card">
       <div class="card-title">Activity Data</div>
       <div style="padding:20px;">
+
+      <!-- ✅ 기록 날짜 입력 -->
+        <div style="margin-bottom:12px;">
+          <label style="display:block; margin-bottom:4px;">기록 날짜</label>
+          <input type="date"
+                 id="activity-date"
+                 value="${todayStr}"
+                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db;" />
+        </div>
+
         <label>걸음 수:</label>
         <input type="number" id="activity-steps" value="${steps}" min="0" style="width:200px;padding:8px;margin:10px 0;" />
         
@@ -789,15 +838,14 @@ function renderActivityPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: sessionStorage.getItem('username'),
+          user_id: localStorage.getItem('username'),
           steps: steps
         })
       });
-      const data = await res.json()
+      const data = await res.json();
       if (data.message === 'fail') {
-        throw new Error('DB Error')
+        throw new Error('DB Error');
       }
-
 
       dataStore.today.steps = steps;
 
@@ -815,18 +863,21 @@ function renderActivityPage() {
   });
 }
 
-// Nutrition 페이지 렌더
+/* ==========================
+   Nutrition 페이지
+   ========================== */
+
 function renderNutritionPage() {
   const container = document.getElementById('content-container');
   loadTodayData();
-  const { foodLogs = [], kcal } = dataStore.today;   // kcal는 나중에 백엔드에서 채워 넣을 수도 있음
+  const { foodLogs = [], kcal } = dataStore.today;
 
-  // 음식 선택 셀렉트 옵션 생성
+  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜
+
   const optionsHtml = FOOD_NAMES
     .map(name => `<option value="${name}">${name}</option>`)
     .join("");
 
-  // 이미 기록한 음식 리스트 표시용
   const logsHtml = foodLogs.length === 0
     ? `<p class="subtext" style="margin-top:8px;">아직 등록된 음식 기록이 없습니다.</p>`
     : `
@@ -839,6 +890,16 @@ function renderNutritionPage() {
     <section class="card">
       <div class="card-title">Nutrition Data</div>
       <div style="padding:20px; display:flex; flex-direction:column; gap:14px; max-width:420px;">
+        
+      <!-- ✅ 기록 날짜 입력 -->
+        <div>
+          <label style="font-size:14px;">기록 날짜</label>
+          <input type="date"
+                 id="nutrition-date"
+                 value="${todayStr}"
+                 style="width:100%; padding:8px 10px; border-radius:8px;
+                        border:1px solid #d1d5db; margin-top:4px;" />
+        </div>
         
         <div>
           <label style="font-size:14px;">오늘까지 섭취한 총 칼로리</label>
@@ -898,18 +959,16 @@ function renderNutritionPage() {
       return;
     }
 
-    // 1) 프론트 로컬 로그에 음식 기록 저장 (칼로리는 저장 X)
+    // 프론트 기록
     dataStore.today.foodLogs = [
       ...(dataStore.today.foodLogs || []),
       { food: foodName, weight }
     ];
     saveTodayData();
 
-    // 2) 백엔드에 Food_log 전송 (칼로리 계산은 서버에서 처리)
     try {
-      const userId = sessionStorage.getItem('username') || sessionStorage.getItem('user_id');
+      const userId = localStorage.getItem('username') || localStorage.getItem('user_id');
 
-      // 오늘 섭취 음식 추가
       const res = await fetch(`${INFO_URL}/addFoodLog`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -917,16 +976,13 @@ function renderNutritionPage() {
           user_id: userId,
           food_name: foodName,
           food_weight: weight
-          // food_calories, recorded_at 등은 서버가 DB 규칙대로 생성
         })
       });
-      const data = await res.json()
+      const data = await res.json();
       if (data.message === 'fail') {
-        throw new Error('DB Error')
+        throw new Error('DB Error');
       }
 
-
-      // 오늘 섭취 칼로리 불러오기
       const startDate = new Date();
       startDate.setHours(0, 0, 0, 0);
 
@@ -960,20 +1016,35 @@ function renderNutritionPage() {
       console.warn('Food_log 저장 실패', err);
     }
 
-    renderNutritionPage();   // 페이지 다시 그려서 리스트 업데이트
+    renderNutritionPage();
   });
 }
 
-// Body Info 페이지 렌더
+/* ==========================
+   Body Info 페이지
+   ========================== */
+
 function renderBodyInfoPage() {
   const container = document.getElementById('content-container');
   loadTodayData();
   const { bpm } = dataStore.today;
 
+   const todayStr = formatDate(new Date());   // ✅ 오늘 날짜
+
   container.innerHTML = `
     <section class="card">
       <div class="card-title">Body Info Data</div>
       <div style="padding:20px;">
+
+      <!-- ✅ 기록 날짜 입력 -->
+        <div style="margin-bottom:12px;">
+          <label style="display:block; margin-bottom:4px;">기록 날짜</label>
+          <input type="date"
+                 id="body-date"
+                 value="${todayStr}"
+                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db;" />
+        </div>
+
         <label>평균 심박수 (bpm):</label>
         <input type="number" id="body-bpm" value="${bpm}" min="0" style="width:200px;padding:8px;margin:10px 0;" />
         
@@ -990,16 +1061,15 @@ function renderBodyInfoPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: sessionStorage.getItem('username'),
+          user_id: localStorage.getItem('username'),
           heart_rate: bpm
         })
       });
 
-      const data = await res.json()
+      const data = await res.json();
       if (data.message === 'fail') {
-        throw new Error('DB Error')
+        throw new Error('DB Error');
       }
-
 
       dataStore.today.bpm = bpm;
 
@@ -1011,13 +1081,16 @@ function renderBodyInfoPage() {
       loadPage('dashboard');
 
     } catch (err) {
-      console.warn('Heart_rate 저장 실패', err);
+      console.warn('Heart_rate 저장 실패:', err);
       alert('Heart_rate 저장 실패');
     }
   });
 }
 
-// Settings 페이지 렌더
+/* ==========================
+   Settings 페이지
+   ========================== */
+
 function renderSettingsPage() {
   const container = document.getElementById('content-container');
   container.innerHTML = `
@@ -1036,16 +1109,16 @@ function renderSettingsPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            user_id: sessionStorage.getItem('username'),
+            user_id: localStorage.getItem('username'),
           })
         });
 
-        const data = await res.json()
+        const data = await res.json();
         if (data.message === 'fail') {
-          throw new Error('DB Error')
+          throw new Error('DB Error');
         }
-      
-        sessionStorage.removeItem('todayData');
+
+        localStorage.removeItem('todayData');
         dataStore.today = { sleep: { hours: 0, minutes: 0 }, steps: 0, kcal: 0, bpm: 0 };
         alert('데이터가 삭제되었습니다.');
         updateDashboard();
@@ -1059,9 +1132,11 @@ function renderSettingsPage() {
   });
 }
 
-// 안전한 초기 바인딩: DOMContentLoaded 안에서 한 번만 처리
+/* ==========================
+   DOMContentLoaded 초기화
+   ========================== */
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // 네비게이션 위임 바인딩
   const nav = document.querySelector('.nav');
   if (nav && nav.dataset._bound !== '1') {
     nav.dataset._bound = '1';
@@ -1077,14 +1152,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('[nav bind] 완료');
   }
 
-  // header 버튼 안전 바인딩
   const loginButton = document.getElementById("login-btn");
   if (loginButton) loginButton.addEventListener("click", () => { window.location.href = "../log_in/login.html"; });
 
   const signupButton = document.getElementById("signup-btn");
   if (signupButton) signupButton.addEventListener("click", () => { window.location.href = "../Sign_in/Sign_in.html"; });
 
-  // 초기 데이터 로드/렌더
-  await loadTodayData();    // 백엔드에서 데이터 로드 (async)
-  updateDashboard();        // 대시보드 UI 업데이트
+  await loadTodayData();
+  updateDashboard();
 });
