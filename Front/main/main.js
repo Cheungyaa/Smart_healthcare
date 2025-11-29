@@ -109,7 +109,6 @@ async function loadTodayData() {
     dataStore.sleep_target.minutes = 0;
   }
 }
-
 // 백엔드에서 오늘 데이터 가져오기
 async function loadTodayDataFromBackend(userId) {
   try {
@@ -182,7 +181,6 @@ async function loadTodayDataFromBackend(userId) {
     console.error('DB|today data load failed:', err);
   }
 }
-
 // 백엔드에서 최근 7일 데이터 가져오기
 async function loadLast7DaysFromBackend(userId) {
   try {
@@ -284,7 +282,6 @@ async function loadLast7DaysFromBackend(userId) {
     initializeEmptyHistory();
   }
 }
-
 // 히스토리 비어있을 때 기본값
 function initializeEmptyHistory() {
   const labels = [];
@@ -306,7 +303,6 @@ function saveTodayData() {
   localStorage.setItem('todayData', JSON.stringify({ today: dataStore.today }));
   localStorage.setItem('todayHistory', JSON.stringify(dataStore.history));
 }
-
 // key별 오늘값 매핑 (sleep은 숫자값이 필요할 때만 사용)
 function getHistoryValueForToday(key) {
   switch (key) {
@@ -320,7 +316,6 @@ function getHistoryValueForToday(key) {
     default: return 0;
   }
 }
-
 // history에 오늘 값 push (최대 7개 유지)
 // ✅ sleep은 {hours, minutes}, 나머지는 숫자로 관리
 function pushTodayToHistory() {
@@ -388,14 +383,12 @@ function formatDateTime(date) {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
-
 function formatDate(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-
 // HH:MM 형식 시작/종료 시각으로 전체 수면 시간 계산
 function calcSleepDuration(startTime, endTime) {
   if (!startTime || !endTime) return { hours: 0, minutes: 0 };
@@ -526,7 +519,19 @@ function drawCharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      scales: { y: { title: { display: true, text: 'BMI' } } },
+      scales: { 
+        x: {
+          ticks: {
+            callback: function (value) {
+              const label = this.getLabelForValue(value);
+              const parts = label.split(".");
+              const mm = parts[1].trim().padStart(2, "0");
+              const dd = parts[2].trim().padStart(2, "0");
+              return `${mm}.${dd}`;
+            }
+          }
+        },
+        y: { title: { display: true, text: 'BMI' } } },
       plugins: { legend: { display: false } }
     }
   });
