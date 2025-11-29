@@ -74,12 +74,12 @@ const dataStore = {
 
 // 로그인 체크 함수 (한 곳만)
 function isLoggedIn() {
-  return !!localStorage.getItem('isLoggedIn');
+  return !!sessionStorage.getItem('isLoggedIn');
 }
 
 // 오늘 데이터 로드
 async function loadTodayData() {
-  const userId = localStorage.getItem('username');
+  const userId = sessionStorage.getItem('username');
 
   if (userId) {
     await loadTodayDataFromBackend(userId);
@@ -305,9 +305,9 @@ function initializeEmptyHistory() {
 // today 데이터 저장
 function saveTodayData() {
   // today 데이터 저장
-  localStorage.setItem('todayData', JSON.stringify({ today: dataStore.today }));
+  sessionStorage.setItem('todayData', JSON.stringify({ today: dataStore.today }));
   // history 저장
-  localStorage.setItem('todayHistory', JSON.stringify(dataStore.history));
+  sessionStorage.setItem('todayHistory', JSON.stringify(dataStore.history));
 }
 // history에 오늘 값 push (최대 7개 유지)
 function pushTodayToHistory() {
@@ -746,7 +746,7 @@ function renderSleepPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: localStorage.getItem('username'),
+          user_id: sessionStorage.getItem('username'),
           start_time: `${startDate} ${startTime}:00`,
           end_time: `${endDate} ${endTime}:00`
         })
@@ -802,7 +802,7 @@ function renderActivityPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: localStorage.getItem('username'),
+          user_id: sessionStorage.getItem('username'),
           steps: steps
         })
       });
@@ -920,7 +920,7 @@ function renderNutritionPage() {
 
     // 2) 백엔드에 Food_log 전송 (칼로리 계산은 서버에서 처리)
     try {
-      const userId = localStorage.getItem('username') || localStorage.getItem('user_id');
+      const userId = sessionStorage.getItem('username') || sessionStorage.getItem('user_id');
 
       // 오늘 섭취 음식 추가
       const res = await fetch(`${INFO_URL}/addFoodLog`, {
@@ -1003,7 +1003,7 @@ function renderBodyInfoPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: localStorage.getItem('username'),
+          user_id: sessionStorage.getItem('username'),
           heart_rate: bpm
         })
       });
@@ -1049,7 +1049,7 @@ function renderSettingsPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            user_id: localStorage.getItem('username'),
+            user_id: sessionStorage.getItem('username'),
           })
         });
 
@@ -1058,7 +1058,7 @@ function renderSettingsPage() {
           throw new Error('DB Error')
         }
       
-        localStorage.removeItem('todayData');
+        sessionStorage.removeItem('todayData');
         dataStore.today = { sleep: { hours: 0, minutes: 0 }, steps: 0, kcal: 0, bpm: 0 };
         alert('데이터가 삭제되었습니다.');
         updateDashboard();
@@ -1097,32 +1097,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const signupButton = document.getElementById("signup-btn");
   if (signupButton) signupButton.addEventListener("click", () => { window.location.href = "../Sign_in/Sign_in.html"; });
 
-  // 로그인 상태에 따라 UI 업데이트
-  const updateLoginUI = () => {
-    if (isLoggedIn()) {
-      const username = localStorage.getItem("username") || '사용자';
-      document.getElementById("username").textContent = username;
-      document.querySelector(".auth-buttons").classList.add("hidden");
-      document.querySelector(".user-info").classList.remove("hidden");
-    } else {
-      document.querySelector(".auth-buttons").classList.remove("hidden");
-      document.querySelector(".user-info").classList.add("hidden");
-    }
-  };
-
-  // 로그아웃 버튼 이벤트 바인딩
-  const logoutButton = document.getElementById("logout-btn");
-  if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("username");
-      alert("로그아웃되었습니다.");
-      window.location.href = "../log_in/login.html";
-    });
-  }
-
   // 초기 데이터 로드/렌더
-  updateLoginUI();          // 로그인 UI 먼저 업데이트
   await loadTodayData();    // 백엔드에서 데이터 로드 (async)
   updateDashboard();        // 대시보드 UI 업데이트
 });
