@@ -639,8 +639,7 @@ function renderSleepPage() {
   loadTodayData();
   const { start, end, hours, minutes } = dataStore.today.sleep;
 
-  const todayStr = formatDate(new Date());   // ✅ 오늘 날짜 "YYYY-MM-DD"
-
+  // 시간을 AM/PM, 시간, 분으로 파싱하는 헬퍼 함수
   const parseTime = (timeStr) => {
     if (!timeStr) return { ampm: 'AM', hour: '12', minute: '00' };
     const [h, m] = timeStr.split(':').map(Number);
@@ -656,30 +655,43 @@ function renderSleepPage() {
   const startParsed = parseTime(start);
   const endParsed = parseTime(end);
 
+  // 날짜 기본값: 전날(시작), 오늘(종료)
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const defaultStartDate = formatDate(yesterday); // YYYY-MM-DD
+  const defaultEndDate   = formatDate(today);     // YYYY-MM-DD
+
+  // 시간 옵션 생성 (1-12)
   const hourOptions = Array.from({ length: 12 }, (_, i) => {
     const h = String(i + 1).padStart(2, '0');
     return `<option value="${h}">${h}</option>`;
   }).join('');
 
+  // 분 옵션 생성 (00-55, 5분 단위)
   const minuteOptions = Array.from({ length: 12 }, (_, i) => {
     const m = String(i * 5).padStart(2, '0');
     return `<option value="${m}">${m}</option>`;
   }).join('');
 
   const selectStyle = "padding:8px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;";
+  const dateInputStyle = "padding:8px 10px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;";
 
   container.innerHTML = `
     <section class="card">
       <div class="card-title">Sleep Data</div>
       <div style="padding:20px; display:flex; flex-direction:column; gap:16px; max-width:600px;">
-      
-      <!-- ✅ 기록 날짜 입력 -->
+
+        <!-- 수면 시작 날짜 -->
         <div>
-          <label style="display:block; margin-bottom:8px; font-weight:500;">기록 날짜</label>
-          <input type="date"
-                 id="sleep-date"
-                 value="${todayStr}"
-                 style="padding:8px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;" />
+          <label style="display:block; margin-bottom:8px; font-weight:500;">수면 시작 날짜</label>
+          <input
+            type="date"
+            id="sleep-start-date"
+            style="${dateInputStyle}"
+            value="${defaultStartDate}"
+          />
         </div>
 
         <!-- 수면 시작 시간 -->
@@ -698,6 +710,17 @@ function renderSleepPage() {
               ${minuteOptions}
             </select>
           </div>
+        </div>
+
+        <!-- 수면 종료 날짜 -->
+        <div>
+          <label style="display:block; margin-bottom:8px; font-weight:500;">수면 종료 날짜</label>
+          <input
+            type="date"
+            id="sleep-end-date"
+            style="${dateInputStyle}"
+            value="${defaultEndDate}"
+          />
         </div>
 
         <!-- 수면 종료 시간 -->
@@ -732,12 +755,15 @@ function renderSleepPage() {
     </section>
   `;
 
+  // 저장된 값으로 시간 select 설정
   document.getElementById('sleep-start-hour').value = startParsed.hour;
   document.getElementById('sleep-start-minute').value = startParsed.minute;
   document.getElementById('sleep-end-hour').value = endParsed.hour;
   document.getElementById('sleep-end-minute').value = endParsed.minute;
 
+  // 저장 버튼 핸들러
   document.getElementById('save-sleep-btn').addEventListener('click', async () => {
+    // 12시간 형식을 24시간 형식으로 변환
     const convertTo24Hour = (ampm, hour, minute) => {
       let h = parseInt(hour);
       if (ampm === 'AM' && h === 12) h = 0;
@@ -745,27 +771,27 @@ function renderSleepPage() {
       return `${String(h).padStart(2, '0')}:${minute}`;
     };
 
-    const startAmpm = document.getElementById('sleep-start-ampm').value;
-    const startHour = document.getElementById('sleep-start-hour').value;
+    const startDate = document.getElementById('sleep-start-date').value; // YYYY-MM-DD
+    const endDate   = document.getElementById('sleep-end-date').value;
+
+    if (!startDate || !endDate) {
+      alert('수면 시작/종료 날짜를 모두 선택해주세요.');
+      return;
+    }
+
+    const startAmpm   = document.getElementById('sleep-start-ampm').value;
+    const startHour   = document.getElementById('sleep-start-hour').value;
     const startMinute = document.getElementById('sleep-start-minute').value;
 
-    const endAmpm = document.getElementById('sleep-end-ampm').value;
-    const endHour = document.getElementById('sleep-end-hour').value;
+    const endAmpm   = document.getElementById('sleep-end-ampm').value;
+    const endHour   = document.getElementById('sleep-end-hour').value;
     const endMinute = document.getElementById('sleep-end-minute').value;
 
     const startTime = convertTo24Hour(startAmpm, startHour, startMinute);
-    const endTime = convertTo24Hour(endAmpm, endHour, endMinute);
+    const endTime   = convertTo24Hour(endAmpm, endHour, endMinute);
 
+    // 총 수면시간 계산 (시/분)
     const { hours, minutes } = calcSleepDuration(startTime, endTime);
-
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const [startHour24] = startTime.split(':').map(Number);
-    const [endHour24] = endTime.split(':').map(Number);
-    const startDate = (startHour24 > endHour24 || startHour24 >= 18) ? formatDate(yesterday) : formatDate(today);
-    const endDate = formatDate(today);
 
     try {
       const res = await fetch(`${INFO_URL}/addActualSleep`, {
@@ -774,7 +800,7 @@ function renderSleepPage() {
         body: JSON.stringify({
           user_id: localStorage.getItem('username'),
           start_time: `${startDate} ${startTime}:00`,
-          end_time: `${endDate} ${endTime}:00`
+          end_time:   `${endDate} ${endTime}:00`
         })
       });
 
@@ -783,9 +809,9 @@ function renderSleepPage() {
         throw new Error('DB Error');
       }
 
-      dataStore.today.sleep.start = startTime;
-      dataStore.today.sleep.end = endTime;
-      dataStore.today.sleep.hours = hours;
+      dataStore.today.sleep.start   = startTime;
+      dataStore.today.sleep.end     = endTime;
+      dataStore.today.sleep.hours   = hours;
       dataStore.today.sleep.minutes = minutes;
 
       pushTodayToHistory();
