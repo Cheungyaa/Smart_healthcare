@@ -41,3 +41,6 @@ class SignServer:
             userDB = UserDB()
             flag = userDB.logIn(id, pw)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
+
+# Flask 앱이 임포트될 때 라우트가 등록되도록 클래스 인스턴스를 생성합니다.
+SignServer()
