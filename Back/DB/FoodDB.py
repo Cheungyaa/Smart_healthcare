@@ -31,7 +31,7 @@ class FoodDB:
         
         self.cur.execute("""
             INSERT INTO food_log (user_id, food_name, food_weight, food_calories, recorded_at)
-            VALUES (:user_id, :food_name, :food_weight, :food_calories, :recorded_at)
+            VALUES (:user_id, :food_name, :food_weight, :food_calories, SYSDATE)
             """, {
                 "user_id": user_id, 
                 "food_name": food_name, 
@@ -40,7 +40,6 @@ class FoodDB:
                 "recorded_at": recorded_at
             }
         )
-        
         
         self.connect.commit()
         self.dbManager.close()

@@ -1,42 +1,38 @@
-import { SIGN_URL } from '../main/config.js';
+import { SIGN_URL as URL } from '../main/config.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('login-form');
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("login-form");
 
-  if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
+    loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
 
-      const usernameInput = document.getElementById('username');
-      const passwordInput = document.getElementById('password');
+        const username = event.target.username.value;
+        const password = event.target.password.value;
 
-      const id = usernameInput.value;
-      const pw = passwordInput.value;
+        console.log("로그인 시도:", { username, password });
 
-      try {
-        const response = await fetch(`${SIGN_URL}/LogIn`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id, pw }),
+        // 서버에 로그인 요청
+        // 성공 시 {"message": "success"} json 객체 전송
+        // 실패 시 {"message": "fail"} json 객체 전송 : id가 없거나 pw 불일치
+        const res = await fetch(URL + "/LogIn", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: username, pw: password })
         });
 
-        const result = await response.json();
+        // 응답 JSON 파싱
+        const data = await res.json();
+        const msg = data.message;
 
-        if (result.message === 'success') {
-          alert('로그인 성공!');
-          // localStorage에 로그인 상태와 사용자 ID 저장
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('username', id);
-          window.location.href = '../main/main.html'; // 메인 페이지로 이동
-        } else {
-          alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+        // 로그인 성공 시 대시보드 페이지로 이동
+        if (msg == "success") {
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("username", username);
+            alert("로그인에 성공했습니다!");
+            window.location.href = "../main/main.html"; // log_in -> main 폴더로 이동} // 다음 화면으로 변경
         }
-      } catch (error) {
-        console.error('로그인 요청 중 오류 발생:', error);
-        alert('로그인 중 오류가 발생했습니다. 서버 상태를 확인해주세요.');
-      }
+        else {
+            alert("ID 또는 비밀번호가 일치하지 않습니다"); // 경고 메세지 출력
+        }
     });
-  }
 });

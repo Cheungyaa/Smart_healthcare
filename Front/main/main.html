@@ -162,7 +162,36 @@
     </main>
   </div>
 
-  <script type="module" src="main.js?v=1.0.1"></script>
+  <script>
+    // 로그인 상태 확인
+    if (!localStorage.getItem("isLoggedIn")) {
+      // 개발 중이면 막지 말고 그대로 두기
+      // alert("로그인 후 이용해주세요.");
+      // window.location.href = "../log_in/login.html";
+    } else {
+      const username = localStorage.getItem("username") || '사용자';
+      document.getElementById("username").textContent = username;
+      document.querySelector(".auth-buttons").classList.add("hidden");
+      document.querySelector(".user-info").classList.remove("hidden");
+    }
+
+    // 로그아웃
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("username");
+      alert("로그아웃되었습니다.");
+      window.location.href = "../log_in/login.html";
+    });
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      window.location.href = "../log_in/login.html";
+    });
+
+    document.getElementById("signup-btn").addEventListener("click", () => {
+      window.location.href = "../Sign_in/Sign_in.html";
+    });
+  </script>
+  <script type="module" src="main.js"></script>
 </body>
 
 </html>
