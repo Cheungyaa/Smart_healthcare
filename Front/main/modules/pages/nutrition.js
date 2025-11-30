@@ -129,29 +129,6 @@ export async function renderNutritionPage(navigateTo) {
         throw new Error('DB Error');
       }
 
-      const startDate = new Date();
-      startDate.setHours(0, 0, 0, 0);
-
-      const endDate = new Date();
-      endDate.setHours(23, 59, 59, 999);
-
-      const foodLogRes = await fetch(`${INFO_URL}/getFoodLog`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          start_time: formatDateTime(startDate),
-          end_time: formatDateTime(endDate)
-        })
-      });
-
-      const foodLogData = await foodLogRes.json();
-      let totCalories = 0;
-      for (const cal of foodLogData) {
-        totCalories += cal.food_calories;
-      }
-      dataStore.today.kcal = totCalories;
-      updateDashboard();
       alert(`${foodName} ${weight}g 기록이 추가되었습니다.`);
       renderNutritionPage(navigateTo);
     } catch (err) {

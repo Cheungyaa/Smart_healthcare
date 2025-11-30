@@ -197,7 +197,6 @@ async function loadLast7DaysFromBackend(userId, key) {
             d.setUTCDate(now.getUTCDate() - i);
             date.push(d.toUTCString().split(' ').splice(0, 4).join(' '));
         }
-        console.log('DB|date', date);
 
         // labels
         const labels = [];
@@ -219,8 +218,7 @@ async function loadLast7DaysFromBackend(userId, key) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: userId, start_time: start, end_time: end })
             }).then(res => res.json()).catch(() => []);
-            console.log('DB|weight', weight);
-
+            
             let latest_weight = 0; let latest_bmi = 0;
             if (weight.length != 0) {
                 let j = 0;
