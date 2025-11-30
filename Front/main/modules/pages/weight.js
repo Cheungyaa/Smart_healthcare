@@ -3,18 +3,18 @@ import { dataStore, loadData } from '../dataManager.js';
 import { updateDashboard } from '../uiManager.js';
 import { formatDate } from '../utils.js';
 
-export function renderWeightPage(navigateTo) {
-    const container = document.getElementById('content-container');
-    loadData();
+export async function renderWeightPage(navigateTo) {
+  const container = document.getElementById('content-container');
+  await loadData('weight');
 
-    const date = formatDate(new Date());
-    const todayWeight = dataStore.today.weight;
-    const weightLogs = dataStore.history.weight;
-    // eslint-disable-next-line no-unused-vars
-    const label = dataStore.history.labels;
+  const date = formatDate(new Date());
+  const todayWeight = dataStore.today.weight;
+  const weightLogs = dataStore.history.weight;
+  // eslint-disable-next-line no-unused-vars
+  const label = dataStore.history.labels;
 
 
-    let htmlContent = `
+  let htmlContent = `
     <section class="card">
       <div class="card-title">몸무게 관리</div>
       <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
@@ -44,65 +44,62 @@ export function renderWeightPage(navigateTo) {
           <h3 style="margin:0 0 12px 0; font-size:16px; font-weight:600;">최근 일주일 기록</h3>
           <div id="weight-list" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;">
   `;
-    if (weightLogs.length === 0) {
-        htmlContent += '<p style="color:#9ca3af; font-size:14px;">등록된 몸무게 기록이 없습니다.</p>';
-    } else {
-        for (let i = 6; i >= 0; i--) {
-            const w = weightLogs[i];
-            if (w === 0) continue;
-            const dateObj = new Date();
-            dateObj.setDate(dateObj.getDate() - (6 - i));
-            const dateStr = dateObj.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', weekday: 'short' });
-            htmlContent += `
+  if (weightLogs.length === 0) {
+    htmlContent += '<p style="color:#9ca3af; font-size:14px;">등록된 몸무게 기록이 없습니다.</p>';
+  } else {
+    for (let i = 6; i >= 0; i--) {
+      const w = weightLogs[i];
+      if (w === 0) continue;
+      const dateObj = new Date();
+      dateObj.setDate(dateObj.getDate() - (6 - i));
+      const dateStr = dateObj.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', weekday: 'short' });
+      htmlContent += `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f3f4f6; border-radius:8px;">
           <div style="font-weight:500;">${dateStr}</div>
           <div style="font-size:18px; font-weight:600; color:#38bdf8;">${w} kg</div>
         </div>
       `;
-        }
     }
-    htmlContent += `
+  }
+  htmlContent += `
             </div>
         </div>
       </div>
     </section>
   `;
 
-    container.innerHTML = htmlContent;
+  container.innerHTML = htmlContent;
 
-    // 추가 버튼 이벤트
-    document.getElementById('add-weight-btn').addEventListener('click', async () => {
-        const date = document.getElementById('weight-date').value;
-        const weight = parseFloat(document.getElementById('weight-input').value);
+  // 추가 버튼 이벤트
+  document.getElementById('add-weight-btn').addEventListener('click', async () => {
+    const date = document.getElementById('weight-date').value;
+    const weight = parseFloat(document.getElementById('weight-input').value);
 
-        if (!date || isNaN(weight) || weight <= 0) {
-            alert('올바른 날짜와 몸무게를 입력해주세요.');
-            return;
-        }
+    if (!date || isNaN(weight) || weight <= 0) {
+      alert('올바른 날짜와 몸무게를 입력해주세요.');
+      return;
+    }
 
-        try {
-            const res = await fetch(`${INFO_URL}/addWeight`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: localStorage.getItem('username'),
-                    weight: weight,
-                    time: `${date} 00:00:01`
-                })
-            });
-            const data = await res.json();
-            if (data.message === 'fail') {
-                throw new Error('DB Error');
-            }
+    try {
+      const res = await fetch(`${INFO_URL}/addWeight`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: localStorage.getItem('username'),
+          weight: weight,
+          time: `${date} 00:00:01`
+        })
+      });
+      const data = await res.json();
+      if (data.message === 'fail') {
+        throw new Error('DB Error');
+      }
 
-            dataStore.today.weight = weight;
-            updateDashboard();
-
-            alert('몸무게가 저장되었습니다!');
-            renderWeightPage(navigateTo);
-        } catch (err) {
-            console.error('몸무게 저장에 실패했습니다:', err);
-            alert('몸무게 저장에 실패했습니다.');
-        }
-    });
+      alert('몸무게가 저장되었습니다!');
+      renderWeightPage(navigateTo);
+    } catch (err) {
+      console.error('몸무게 저장에 실패했습니다:', err);
+      alert('몸무게 저장에 실패했습니다.');
+    }
+  });
 }

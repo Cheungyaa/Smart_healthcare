@@ -65,13 +65,12 @@ class BodyInfoDB:
             FROM (
                 SELECT t.*,
                        ROW_NUMBER() OVER (
-                           PARTITION BY user_id, TRUNC(recorded_at)
+                           PARTITION BY user_id, TRUNC(time)
                            ORDER BY recorded_at DESC                         
                        ) AS rn
                 FROM weight_log t
                 WHERE t.user_id = :user_id
-                  AND recorded_at >= :start_time
-                  AND recorded_at <= :end_time
+                  AND time BETWEEN :start_time AND :end_time
             )
             WHERE rn = 1;
         """, {"user_id": user_id, "start_time": start_time, "end_time": end_time})

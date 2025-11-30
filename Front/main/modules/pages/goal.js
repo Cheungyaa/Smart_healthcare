@@ -2,12 +2,12 @@ import { INFO_URL } from '../../config.js';
 import { dataStore, loadData } from '../dataManager.js';
 import { updateDashboard } from '../uiManager.js';
 
-export function renderGoalPage(navigateTo) {
-    const container = document.getElementById('content-container');
-    loadData();
-    const goals = dataStore.goals;
+export async function renderGoalPage(navigateTo) {
+  const container = document.getElementById('content-container');
+  await loadData('goals');
+  const goals = dataStore.goals;
 
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="goal-container">
       <h1 class="page-title">목표 설정</h1>
       
@@ -103,93 +103,86 @@ export function renderGoalPage(navigateTo) {
     </div>
   `;
 
-    // 저장 버튼 이벤트 핸들러
-    document.querySelectorAll('.goal-save-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const goalType = btn.dataset.goal;
+  // 저장 버튼 이벤트 핸들러
+  document.querySelectorAll('.goal-save-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const goalType = btn.dataset.goal;
 
-            try {
-                if (goalType === 'sleep') {
-                    const hours = parseInt(document.getElementById('sleep-hours').value) || 0;
-                    const minutes = parseInt(document.getElementById('sleep-minutes').value) || 0;
+      try {
+        if (goalType === 'sleep') {
+          const hours = parseInt(document.getElementById('sleep-hours').value) || 0;
+          const minutes = parseInt(document.getElementById('sleep-minutes').value) || 0;
 
-                    const res = await fetch(`${INFO_URL}/addTargetSleep`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', },
-                        body: JSON.stringify({
-                            user_id: localStorage.getItem('username'),
-                            target_sleep_time: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`,
-                        }),
-                    });
-                    const data = await res.json();
-                    if (data.message === 'fail') {
-                        throw new Error(goalType + 'DB Error');
-                    }
+          const res = await fetch(`${INFO_URL}/addTargetSleep`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', },
+            body: JSON.stringify({
+              user_id: localStorage.getItem('username'),
+              target_sleep_time: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`,
+            }),
+          });
+          const data = await res.json();
+          if (data.message === 'fail') {
+            throw new Error(goalType + 'DB Error');
+          }
 
-                }
-                else if (goalType === 'steps') {
-                    const steps = parseInt(document.getElementById('steps-target').value) || 0;
+        }
+        else if (goalType === 'steps') {
+          const steps = parseInt(document.getElementById('steps-target').value) || 0;
 
-                    const res = await fetch(`${INFO_URL}/addTargetSteps`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', },
-                        body: JSON.stringify({
-                            user_id: localStorage.getItem('username'),
-                            target_steps: steps,
-                        }),
-                    });
-                    const data = await res.json();
-                    if (data.message === 'fail') {
-                        throw new Error(goalType + 'DB Error');
-                    }
-                }
-                else if (goalType === 'kcal') {
-                    const kcal = parseInt(document.getElementById('kcal-target').value) || 0;
+          const res = await fetch(`${INFO_URL}/addTargetSteps`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', },
+            body: JSON.stringify({
+              user_id: localStorage.getItem('username'),
+              target_steps: steps,
+            }),
+          });
+          const data = await res.json();
+          if (data.message === 'fail') {
+            throw new Error(goalType + 'DB Error');
+          }
+        }
+        else if (goalType === 'kcal') {
+          const kcal = parseInt(document.getElementById('kcal-target').value) || 0;
 
-                    const res = await fetch(`${INFO_URL}/addTargetCalories`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', },
-                        body: JSON.stringify({
-                            user_id: localStorage.getItem('username'),
-                            target_calories: kcal,
-                        }),
-                    });
-                    const data = await res.json();
-                    if (data.message === 'fail') {
-                        throw new Error(goalType + 'DB Error');
-                    }
-                }
-                else if (goalType === 'weight') {
-                    const weight = parseFloat(document.getElementById('weight-target').value) || 0;
+          const res = await fetch(`${INFO_URL}/addTargetCalories`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', },
+            body: JSON.stringify({
+              user_id: localStorage.getItem('username'),
+              target_calories: kcal,
+            }),
+          });
+          const data = await res.json();
+          if (data.message === 'fail') {
+            throw new Error(goalType + 'DB Error');
+          }
+        }
+        else if (goalType === 'weight') {
+          const weight = parseFloat(document.getElementById('weight-target').value) || 0;
 
-                    const res = await fetch(`${INFO_URL}/addTargetWeight`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', },
-                        body: JSON.stringify({
-                            user_id: localStorage.getItem('username'),
-                            target_weight: weight,
-                        }),
-                    });
-                    const data = await res.json();
-                    if (data.message === 'fail') {
-                        throw new Error(goalType + 'DB Error');
-                    }
-                }
-            } catch (error) {
-                console.error(goalType + '목표 저장 실패 :', error);
-                alert(goalType + ' 목표 저장에 실패했습니다.');
-                return;
-            }
+          const res = await fetch(`${INFO_URL}/addTargetWeight`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', },
+            body: JSON.stringify({
+              user_id: localStorage.getItem('username'),
+              target_weight: weight,
+            }),
+          });
+          const data = await res.json();
+          if (data.message === 'fail') {
+            throw new Error(goalType + 'DB Error');
+          }
+        }
+      } catch (error) {
+        console.error(goalType + '목표 저장 실패 :', error);
+        alert(goalType + ' 목표 저장에 실패했습니다.');
+        return;
+      }
 
-            if (goalType === 'sleep') dataStore.goals.sleep = { hours, minutes };
-            else if (goalType === 'steps') dataStore.goals.steps = steps;
-            else if (goalType === 'kcal') dataStore.goals.kcal = kcal;
-            else if (goalType === 'weight') dataStore.goals.weight = weight;
-
-            updateDashboard();
-
-            alert(goalType + " 목표가 저장되었습니다!");
-            renderGoalPage(navigateTo);
-        });
+      alert(goalType + " 목표가 저장되었습니다!");
+      renderGoalPage(navigateTo);
     });
+  });
 }

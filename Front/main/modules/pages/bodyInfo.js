@@ -3,14 +3,14 @@ import { dataStore, loadData } from '../dataManager.js';
 import { updateDashboard } from '../uiManager.js';
 import { formatDate } from '../utils.js';
 
-export function renderBodyInfoPage(navigateTo) {
-    const container = document.getElementById('content-container');
-    loadData();
-    const { bpm } = dataStore.today;
+export async function renderBodyInfoPage(navigateTo) {
+  const container = document.getElementById('content-container');
+  await loadData('bpm');
+  const { bpm } = dataStore.today;
 
-    const date = formatDate(new Date());
+  const date = formatDate(new Date());
 
-    container.innerHTML = `
+  container.innerHTML = `
     <section class="card">
       <div class="card-title">Body Info Data</div>
       <div style="padding:20px;">
@@ -32,36 +32,34 @@ export function renderBodyInfoPage(navigateTo) {
     </section>
   `;
 
-    document.getElementById('save-body-btn').addEventListener('click', async () => {
-        const bpm = parseInt(document.getElementById('body-bpm').value) || 0;
-        const date = document.getElementById('body-date').value;
+  document.getElementById('save-body-btn').addEventListener('click', async () => {
+    const bpm = parseInt(document.getElementById('body-bpm').value) || 0;
+    const date = document.getElementById('body-date').value;
 
-        try {
-            const res = await fetch(`${INFO_URL}/addHeartRate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: localStorage.getItem('username'),
-                    heart_rate: bpm,
-                    time: `${date} 00:00:01`
-                })
-            });
+    try {
+      const res = await fetch(`${INFO_URL}/addHeartRate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: localStorage.getItem('username'),
+          heart_rate: bpm,
+          time: `${date} 00:00:01`
+        })
+      });
 
-            const data = await res.json();
-            if (data.message === 'fail') {
-                alert('심박수 저장에 실패했습니다.');
-                return;
-            }
+      const data = await res.json();
+      if (data.message === 'fail') {
+        alert('심박수 저장에 실패했습니다.');
+        return;
+      }
 
-            dataStore.today.bpm = bpm;
-            updateDashboard();
+      alert('심박수가 저장되었습니다!');
+      navigateTo('dashboard');
 
-            alert('심박수가 저장되었습니다!');
-            navigateTo('dashboard');
-
-        } catch (err) {
-            console.warn('Heart_rate 저장 실패:', err);
-            alert('Heart_rate 저장 실패');
-        }
-    });
+    } catch (err) {
+      console.warn('Heart_rate 저장 실패:', err);
+      alert('Heart_rate 저장 실패');
+    }
+  });
 }
+

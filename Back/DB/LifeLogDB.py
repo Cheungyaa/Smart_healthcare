@@ -35,8 +35,7 @@ class LifeLogDB:
                        ) AS rn
                 FROM sleep_actual t
                 WHERE t.user_id = :user_id
-                  AND actual_end_sleep_time >= :start_time
-                  AND actual_end_sleep_time <= :end_time
+                  AND actual_end_sleep_time BETWEEN :start_time AND :end_time
             )
             WHERE rn = 1;
         """, {
@@ -75,8 +74,7 @@ class LifeLogDB:
                        ) AS rn
                 FROM steps t
                 WHERE t.user_id = :user_id
-                  AND time >= :start_time
-                  AND time <= :end_time
+                  AND time BETWEEN :start_time AND :end_time
             )
             WHERE rn = 1;
         """, {"user_id": user_id, "start_time": start_time, "end_time": end_time})
@@ -111,8 +109,7 @@ class LifeLogDB:
                        ) AS rn
                 FROM heart_rate t
                 WHERE t.user_id = :user_id
-                  AND time >= :start_time
-                  AND time <= :end_time
+                  AND time BETWEEN :start_time AND :end_time
             )
             WHERE rn = 1;
         """, {"user_id": user_id, "start_time": start_time, "end_time": end_time})

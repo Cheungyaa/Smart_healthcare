@@ -3,14 +3,14 @@ import { dataStore, loadData } from '../dataManager.js';
 import { updateDashboard } from '../uiManager.js';
 import { formatDate } from '../utils.js';
 
-export function renderActivityPage(navigateTo) {
-    const container = document.getElementById('content-container');
-    loadData();
-    const { steps } = dataStore.today;
+export async function renderActivityPage(navigateTo) {
+  const container = document.getElementById('content-container');
+  await loadData('steps');
+  const { steps } = dataStore.today;
 
-    const date = formatDate(new Date());
+  const date = formatDate(new Date());
 
-    container.innerHTML = `
+  container.innerHTML = `
     <section class="card">
       <div class="card-title">Activity Data</div>
       <div style="padding:20px;">
@@ -32,35 +32,32 @@ export function renderActivityPage(navigateTo) {
     </section>
   `;
 
-    document.getElementById('save-activity-btn').addEventListener('click', async () => {
-        const steps = parseInt(document.getElementById('activity-steps').value) || 0;
-        const date = document.getElementById('activity-date').value;
+  document.getElementById('save-activity-btn').addEventListener('click', async () => {
+    const steps = parseInt(document.getElementById('activity-steps').value) || 0;
+    const date = document.getElementById('activity-date').value;
 
-        try {
-            const res = await fetch(`${INFO_URL}/addSteps`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: localStorage.getItem('username'),
-                    steps: steps,
-                    time: `${date} 00:00:01`
-                })
-            });
-            const data = await res.json();
-            if (data.message === 'fail') {
-                alert('걸음 수 저장에 실패했습니다.');
-                return;
-            }
+    try {
+      const res = await fetch(`${INFO_URL}/addSteps`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: localStorage.getItem('username'),
+          steps: steps,
+          time: `${date} 00:00:01`
+        })
+      });
+      const data = await res.json();
+      if (data.message === 'fail') {
+        alert('걸음 수 저장에 실패했습니다.');
+        return;
+      }
 
-            dataStore.today.steps = steps;
-            updateDashboard();
+      alert('걸음 수가 저장되었습니다!');
+      navigateTo('dashboard');
 
-            alert('걸음 수가 저장되었습니다!');
-            navigateTo('dashboard');
-
-        } catch (err) {
-            console.error('Activity 데이터 저장 실패:', err);
-            alert('Activity 데이터 저장 실패');
-        }
-    });
+    } catch (err) {
+      console.error('Activity 데이터 저장 실패:', err);
+      alert('Activity 데이터 저장 실패');
+    }
+  });
 }

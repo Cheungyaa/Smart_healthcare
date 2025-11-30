@@ -1,0 +1,27 @@
+Back 
+    - 몸무게 가져오는 DB 코드 버그 수장
+
+Front
+    - 구조 변경: main.js에 코드 통일되어 있던거 부분으로 나눔
+        - (main.js) : 앱 진입점, 초기 데이터 로드 및 네비게이션 이벤트 처리
+        - (config.js) : API 서버 URL 등 전역 설정
+
+            - (modules/dataManager.js) : 전역 데이터 관리 및 백엔드 통신, LocalStorage 저장 로직
+            - (modules/uiManager.js) : UI 업데이트 및 차트 렌더링 관리
+            - (modules/router.js) : 페이지 라우팅 및 접근 제어
+            - (modules/utils.js) : 공용 유틸리티 함수 모음
+
+                - (pages/sleep.js) : 수면 데이터 입력 및 저장 페이지
+                - (pages/activity.js) : 걸음 수 입력 및 저장 페이지
+                - (pages/nutrition.js) : 음식 섭취 기록 입력 및 저장 페이지
+                - (pages/bodyInfo.js) : 심박수 입력 및 저장 페이지
+                - (pages/weight.js) : 체중 입력 및 최근 7일 기록 표시 페이지
+                - (pages/goal.js) : 수면, 걸음, 칼로리, 체중 목표 설정 페이지
+                - (pages/settings.js) : 사용자 데이터 삭제 및 계정 설정 페이지
+
+    - 로직 수정
+        - 로컬에 데이터 저장하지 않고, 서버에만 데이터 저장 및 불러옴 -> 데이터 일관성 강화
+        - 서버에서 데이터 받아오는 로직 수정 -> 로딩 시간 감소
+        - 데이터 로딩이 완료된 후에만 페이지 로딩되게 await 추가
+        - 각각의 페이지에서 필요한 데이터만 로드하게 loadData 함수에 키값 추가
+

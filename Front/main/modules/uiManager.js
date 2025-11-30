@@ -98,7 +98,7 @@ export function drawCharts() {
                 data: dataStore.history.weight,
                 borderColor: '#1f7fd1',
                 backgroundColor: 'rgba(31,127,209,0.15)',
-                tension: 0.25,
+                tension: 0,
                 fill: true,
                 pointRadius: 3
             }]

@@ -54,6 +54,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const signupButton = document.getElementById("signup-btn");
   if (signupButton) signupButton.addEventListener("click", () => { window.location.href = "../Sign_in/Sign_in.html"; });
 
-  await loadData();
+  await loadData('all');
   updateDashboard();
 });

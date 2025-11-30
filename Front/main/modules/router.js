@@ -7,7 +7,7 @@ import { renderWeightPage } from './pages/weight.js';
 import { renderGoalPage } from './pages/goal.js';
 import { renderSettingsPage } from './pages/settings.js';
 
-export function loadPage(page) {
+export async function loadPage(page) {
     const container = document.getElementById('content-container');
     if (!container) return;
 
@@ -22,11 +22,11 @@ export function loadPage(page) {
         return;
     }
 
-    if (page === 'sleep') { renderSleepPage(loadPage); return; }
-    if (page === 'activity') { renderActivityPage(loadPage); return; }
-    if (page === 'nutrition') { renderNutritionPage(loadPage); return; }
-    if (page === 'body-info') { renderBodyInfoPage(loadPage); return; }
-    if (page === 'weight') { renderWeightPage(loadPage); return; }
-    if (page === 'goal') { renderGoalPage(loadPage); return; }
+    if (page === 'sleep') { await renderSleepPage(loadPage); return; }
+    if (page === 'activity') { await renderActivityPage(loadPage); return; }
+    if (page === 'nutrition') { await renderNutritionPage(loadPage); return; }
+    if (page === 'body-info') { await renderBodyInfoPage(loadPage); return; }
+    if (page === 'weight') { await renderWeightPage(loadPage); return; }
+    if (page === 'goal') { await renderGoalPage(loadPage); return; }
     if (page === 'settings') { renderSettingsPage(loadPage); return; }
 }
