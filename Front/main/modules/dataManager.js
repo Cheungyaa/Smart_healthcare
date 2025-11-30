@@ -160,6 +160,12 @@ async function loadTodayDataFromBackend(userId, key) {
                     weight: item.food_weight,
                     kcal: item.food_calories
                 }));
+
+                let kcal = 0;
+                for (let i = 0; i < dataStore.today.foodLogs.length ; i++) {
+                    kcal += dataStore.today.foodLogs[i].kcal;
+                }
+                dataStore.today.kcal = kcal;
             }
         }
 
