@@ -213,7 +213,6 @@ async function loadLast7DaysFromBackend(userId, key) {
         if (key === 'all' || key === 'weight') {
             const weightData = [];
             const bmiData = [];
-            let latest_weight = 0; let latest_bmi = 0;
 
             const weight = await fetch(`${INFO_URL}/getWeight`, {
                 method: 'POST',
@@ -222,6 +221,7 @@ async function loadLast7DaysFromBackend(userId, key) {
             }).then(res => res.json()).catch(() => []);
             console.log('DB|weight', weight);
 
+            let latest_weight = 0; let latest_bmi = 0;
             if (weight.length != 0) {
                 let j = 0;
                 for (let i = 0; i <= 6; i++) {
@@ -237,9 +237,15 @@ async function loadLast7DaysFromBackend(userId, key) {
                         bmiData.push(latest_bmi);
                     }
                 }
+            } else {
+                for (let i = 0; i <= 6; i++) {
+                    weightData.push(0);
+                    bmiData.push(0);
+                }
             }
             dataStore.history.weight = weightData;
-        }
+            dataStore.history.bmi = bmiData;
+        } 
 
         // 수면 시간 -> {hours, minutes}
         if (key === 'all' || key === 'sleep') {
