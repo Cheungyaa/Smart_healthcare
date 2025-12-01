@@ -217,8 +217,8 @@ class InfoServer:
             flag = userDB.deleteAllData(user_id)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
 
-        @app.post("/cancleAccount")
-        def cancleAccount():
+        @app.post("/deleteAccount")
+        def deleteAccount():
             data = request.json
             user_id = data.get("user_id")
             
@@ -227,7 +227,7 @@ class InfoServer:
             if not flag: return jsonify({"message": "fail"})
             
             userDB = UserDB()
-            flag = userDB.cancleAccount(user_id)
+            flag = userDB.deleteAccount(user_id)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
 
 

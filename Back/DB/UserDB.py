@@ -62,7 +62,7 @@ class UserDB:
         self.dbManager.close()
         return True
     
-    def cancleAccount(self, user_id):
+    def deleteAccount(self, user_id):
         self.cur.execute("""
             DELETE FROM "User"
             WHERE user_id = :user_id

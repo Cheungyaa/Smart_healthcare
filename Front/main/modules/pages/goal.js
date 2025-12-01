@@ -33,7 +33,7 @@ export async function renderGoalPage(navigateTo) {
             </div>
             <p class="goal-description">권장: 7시간</p>
           </div>
-          <button class="goal-save-btn" data-goal="sleep">저장</button>
+          <button class="goal-save-btn" data-goal="sleep" style="margin-top:auto;">저장</button>
         </div>
 
         <!-- 걸음 수 목표 -->
@@ -51,7 +51,7 @@ export async function renderGoalPage(navigateTo) {
             </div>
             <p class="goal-description">권장: 10,000걸음</p>
           </div>
-          <button class="goal-save-btn" data-goal="steps">저장</button>
+          <button class="goal-save-btn" data-goal="steps" style="margin-top:auto;">저장</button>
         </div>
 
         <!-- 칼로리 목표 -->
@@ -69,7 +69,7 @@ export async function renderGoalPage(navigateTo) {
             </div>
             <p class="goal-description">권장: 2,200 kcal</p>
           </div>
-          <button class="goal-save-btn" data-goal="kcal">저장</button>
+          <button class="goal-save-btn" data-goal="kcal" style="margin-top:auto;">저장</button>
         </div>
 
         <!-- 몸무게 목표 -->
@@ -87,7 +87,7 @@ export async function renderGoalPage(navigateTo) {
             </div>
             <p class="goal-description">현재 건강한 체중 설정</p>
           </div>
-          <button class="goal-save-btn" data-goal="weight">저장</button>
+          <button class="goal-save-btn" data-goal="weight" style="margin-top:auto;">저장</button>
         </div>
       </div>
 
