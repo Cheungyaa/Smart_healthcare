@@ -16,7 +16,6 @@ export async function renderGoalPage(navigateTo) {
         <div class="goal-card">
           <div class="goal-header">
             <h2 class="goal-title">
-              <span class="goal-icon">😴</span>
               수면 시간
             </h2>
           </div>
@@ -58,7 +57,6 @@ export async function renderGoalPage(navigateTo) {
         <div class="goal-card">
           <div class="goal-header">
             <h2 class="goal-title">
-              <span class="goal-icon">🍎</span>
               섭취 칼로리
             </h2>
           </div>
@@ -76,7 +74,6 @@ export async function renderGoalPage(navigateTo) {
         <div class="goal-card">
           <div class="goal-header">
             <h2 class="goal-title">
-              <span class="goal-icon">⚖️</span>
               목표 몸무게
             </h2>
           </div>
