@@ -27,7 +27,7 @@ export async function renderActivityPage(navigateTo) {
         <label>걸음 수:</label>
         <input type="number" id="activity-steps" value="${steps}" min="0" style="width:200px;padding:8px;margin:10px 0;" />
         
-        <button id="save-activity-btn" style="padding:10px 20px;background:#ff7a59;color:white;border:none;border-radius:4px;cursor:pointer;margin-top:10px;">저장</button>
+        <button id="save-activity-btn" style="padding:10px 20px;background:#0ea5e9;color:white;border:none;border-radius:4px;cursor:pointer;margin-top:10px;">저장</button>
       </div>
     </section>
   `;
