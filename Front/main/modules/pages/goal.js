@@ -39,7 +39,6 @@ export async function renderGoalPage(navigateTo) {
         <div class="goal-card">
           <div class="goal-header">
             <h2 class="goal-title">
-              <span class="goal-icon">👟</span>
               걸음 수
             </h2>
           </div>
