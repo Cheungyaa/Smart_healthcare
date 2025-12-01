@@ -27,7 +27,7 @@ export async function renderBodyInfoPage(navigateTo) {
         <label>평균 심박수 (bpm):</label>
         <input type="number" id="body-bpm" value="${bpm}" min="0" style="width:200px;padding:8px;margin:10px 0;" />
         
-        <button id="save-body-btn" style="padding:10px 20px;background:#7c3aed;color:white;border:none;border-radius:4px;cursor:pointer;margin-top:10px;">저장</button>
+        <button id="save-body-btn" style="padding:10px 20px;background:#0ea5e9;color:white;border:none;border-radius:4px;cursor:pointer;margin-top:10px;">저장</button>
       </div>
     </section>
   `;
