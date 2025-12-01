@@ -48,3 +48,26 @@ class UserDB:
         self.dbManager.close()
         if not status : return False
         return True if status["user_password"] == pw else False
+    
+    def deleteAllData(self, user_id):
+        tables = ["sleep_actual", "target", "steps", "heart_rate", "food_log"]
+        
+        for table in tables:
+            self.cur.execute(f"""
+                DELETE FROM {table}
+                WHERE user_id = :user_id
+                """, {"user_id": user_id})
+        
+        self.connect.commit()
+        self.dbManager.close()
+        return True
+    
+    def cancleAccount(self, user_id):
+        self.cur.execute("""
+            DELETE FROM "User"
+            WHERE user_id = :user_id
+            """, {"user_id": user_id})
+        
+        self.connect.commit()
+        self.dbManager.close()
+        return True

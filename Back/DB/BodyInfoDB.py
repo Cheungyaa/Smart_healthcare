@@ -78,16 +78,4 @@ class BodyInfoDB:
         result = self.cur.fetchall()
         self.dbManager.close()
         return result
-     
-    def deleteAllData(self, user_id):
-        life_log = ["sleep_actual", "target", "steps", "heart_rate", "food_log"]
-        
-        for table in life_log:
-            self.cur.execute(f"""
-                DELETE FROM {table}
-                WHERE user_id = :user_id
-                """, {"user_id": user_id})
-        
-        self.connect.commit()
-        self.dbManager.close()
-        return True
+    

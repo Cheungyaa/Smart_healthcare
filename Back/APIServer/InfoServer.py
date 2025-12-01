@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
 
+from ..DB.UserDB import UserDB
 from ..DB.LifeLogDB import LifeLogDB
 from ..DB.BodyInfoDB import BodyInfoDB
 from ..DB.FoodDB import FoodDB
@@ -212,9 +213,23 @@ class InfoServer:
             data = request.json
             user_id = data.get("user_id")
             
-            bodyInfoDB = BodyInfoDB()
-            flag = bodyInfoDB.deleteAllData(user_id)
+            userDB = UserDB()
+            flag = userDB.deleteAllData(user_id)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
+
+        @app.post("/cancleAccount")
+        def cancleAccount():
+            data = request.json
+            user_id = data.get("user_id")
+            
+            userDB = UserDB()
+            flag = userDB.deleteAllData(user_id)
+            if not flag: return jsonify({"message": "fail"})
+            
+            userDB = UserDB()
+            flag = userDB.cancleAccount(user_id)
+            return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
+
 
 # Flask 앱이 임포트될 때 라우트가 등록되도록 클래스 인스턴스를 생성합니다.
 InfoServer()
