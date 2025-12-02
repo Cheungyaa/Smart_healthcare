@@ -8,7 +8,8 @@
 body {
   background: #eef2f7;
   color: #222;
-  font-size: 1rem; /* 기본 폰트 */
+  font-size: 1rem;
+  /* 기본 폰트 */
 }
 
 .layout {
@@ -28,7 +29,8 @@ body {
   padding: 28px 20px;
   z-index: 9999;
   pointer-events: auto;
-  background: #111827;              /* 더 진한 남색 배경 */
+  background: #111827;
+  /* 더 진한 남색 배경 */
 }
 
 /* ★ 로고(제목) 영역 – 글씨 흰색으로 가독성 ↑ */
@@ -50,15 +52,30 @@ body {
 .logo span {
   font-size: 18px;
   font-weight: 600;
-  color: #f9fafb;   /* Life Log Dashboard 글씨 흰색 */
+  color: #f9fafb;
+  /* Life Log Dashboard 글씨 흰색 */
 }
 
 /* 메뉴 공통 스타일 */
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 16px;
   margin-top: 8px;
+}
+
+/* 카테고리 그룹 */
+.nav-category {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-category:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .nav-item {
@@ -73,16 +90,20 @@ body {
   -webkit-user-select: none;
   user-select: none;
 
-  color: #e5e7eb;                   /* 기본 글자 밝게 */
+  color: #e5e7eb;
+  /* 기본 글자 밝게 */
 }
 
 .nav-item.active {
-  background: #f9fafb;              /* 활성화: 연한 배경 */
-  color: #111827;                   /* 진한 글자색 */
+  background: #f9fafb;
+  /* 활성화: 연한 배경 */
+  color: #111827;
+  /* 진한 글자색 */
 }
 
 .nav-item:hover:not(.active) {
-  background: #1f2937;              /* hover 시 살짝 밝은 남색 */
+  background: #1f2937;
+  /* hover 시 살짝 밝은 남색 */
   color: #ffffff;
 }
 
@@ -97,7 +118,8 @@ body {
    ========================= */
 .main {
   flex: 1;
-  margin-left: 260px; /* 위 .sidebar width와 동일하게 유지 */
+  margin-left: 260px;
+  /* 위 .sidebar width와 동일하게 유지 */
   padding: 24px 32px 32px;
   display: flex;
   flex-direction: column;
@@ -168,19 +190,23 @@ body {
 
 /* ★ 카드 색상 – 쿨톤 단색 계열로 정리 */
 .summary-card.sleep {
-  background: #38bdf8; /* 하늘색 */
+  background: #38bdf8;
+  /* 하늘색 */
 }
 
 .summary-card.steps {
-  background: #1d4ed8; /* 진한 파랑 */
+  background: #1d4ed8;
+  /* 진한 파랑 */
 }
 
 .summary-card.kcal {
-  background: #0ea5e9; /* 청록 계열 파랑 */
+  background: #0ea5e9;
+  /* 청록 계열 파랑 */
 }
 
 .summary-card.bpm {
-  background: #6366f1; /* 인디고 */
+  background: #6366f1;
+  /* 인디고 */
 }
 
 /* =========================
@@ -189,7 +215,8 @@ body {
 .grid-2 {
   display: grid;
   grid-template-columns: 2fr 1.3fr;
-  gap: 18px;          /* ★ 카드 사이 간격 살짝 넓힘 */
+  gap: 18px;
+  /* ★ 카드 사이 간격 살짝 넓힘 */
   margin-top: 8px;
 }
 
@@ -208,8 +235,9 @@ body {
 
 /* 그래프 박스 */
 .chart-placeholder {
-  height: 180px; 
-  width: 35vw;      /* ★ 조금 더 키워서 아래 빈 공간 줄이기 */
+  height: 180px;
+  width: 35vw;
+  /* ★ 조금 더 키워서 아래 빈 공간 줄이기 */
   border-radius: 10px;
   background: linear-gradient(to bottom, #edf2ff, #ffffff);
   border: 1px solid #e5e7eb;
@@ -226,7 +254,8 @@ body {
 .grid-2-bottom {
   display: grid;
   grid-template-columns: 1.4fr 1.6fr;
-  gap: 18px;          /* ★ 하단 카드 간격도 통일 */
+  gap: 18px;
+  /* ★ 하단 카드 간격도 통일 */
   margin-top: 10px;
 }
 
@@ -288,19 +317,23 @@ body {
     flex-direction: column;
     max-width: 100%;
   }
+
   .sidebar {
     width: 100%;
     flex-direction: row;
     justify-content: space-around;
   }
+
   .nav {
     flex-direction: row;
     flex-wrap: wrap;
     margin-top: 0;
   }
+
   .summary-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
   .grid-2,
   .grid-2-bottom {
     grid-template-columns: 1fr;
@@ -353,13 +386,19 @@ body {
   background-color: #111827;
   color: #ffffff;
 }
-.btn-primary:hover { background-color: #323f4b; }
+
+.btn-primary:hover {
+  background-color: #323f4b;
+}
 
 .btn-secondary {
   background-color: #f3f4f6;
   color: #374151;
 }
-.btn-secondary:hover { background-color: #e5e7eb; }
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}
 
 /* --- Login Prompt for Charts --- */
 .login-prompt {
@@ -367,7 +406,8 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  min-height: 150px; /* chart-placeholder와 유사한 최소 높이 */
+  min-height: 150px;
+  /* chart-placeholder와 유사한 최소 높이 */
 }
 
 .login-prompt p {
@@ -376,7 +416,8 @@ body {
 }
 
 /* 만약 투명한 overlay 요소가 있다면 아래 규칙으로 클릭 우회 확인 */
-.content-overlay, .modal-backdrop {
+.content-overlay,
+.modal-backdrop {
   pointer-events: none;
 }
 
@@ -576,6 +617,7 @@ body {
     transform: translateX(400px);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -596,6 +638,272 @@ body {
   }
 }
 
+
 /* =========================
    Weight 페이지 스타일
    ========================= */
+
+/* =========================
+   AI Coach 페이지 스타일
+   ========================= */
+.ai-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ai-analyze-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.2);
+}
+
+.ai-analyze-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+.ai-analyze-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* AI 카드 그리드 */
+.ai-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.ai-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.06);
+  border: 2px solid #e5e7eb;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.ai-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.12);
+}
+
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ai-card-icon {
+  font-size: 24px;
+}
+
+.ai-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.ai-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 스트레스 지수 표시 */
+.stress-level-container {
+  margin-top: 8px;
+}
+
+.stress-level-bar {
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+  position: relative;
+}
+
+.stress-level-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease, background 0.3s ease;
+}
+
+.stress-level-fill.low {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.stress-level-fill.medium {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+.stress-level-fill.high {
+  background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+}
+
+.stress-level-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.stress-level-value {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* 추천 리스트 */
+.recommendation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 4px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e40af;
+  line-height: 1.6;
+}
+
+.recommendation-item::before {
+  content: "💡";
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* 분석 중 로딩 */
+.ai-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.ai-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ai-loading-text {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* 데이터 요약 */
+.data-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.data-summary-item {
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.data-summary-label {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.data-summary-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* 빈 상태 */
+.ai-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.ai-empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.ai-empty-state-text {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.ai-empty-state-subtext {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .ai-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .data-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -6,6 +6,7 @@ import { renderBodyInfoPage } from './pages/bodyInfo.js';
 import { renderWeightPage } from './pages/weight.js';
 import { renderGoalPage } from './pages/goal.js';
 import { renderSettingsPage } from './pages/settings.js';
+import { renderAIPage, initAIPage } from './pages/ai.js';
 
 export async function loadPage(page) {
     const container = document.getElementById('content-container');
@@ -22,6 +23,11 @@ export async function loadPage(page) {
         return;
     }
 
+    if (page === 'ai') {
+        container.innerHTML = renderAIPage();
+        initAIPage();
+        return;
+    }
     if (page === 'sleep') { await renderSleepPage(loadPage); return; }
     if (page === 'activity') { await renderActivityPage(loadPage); return; }
     if (page === 'nutrition') { await renderNutritionPage(loadPage); return; }

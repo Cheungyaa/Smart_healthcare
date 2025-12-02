@@ -162,7 +162,7 @@ async function loadTodayDataFromBackend(userId, key) {
                 }));
 
                 let kcal = 0;
-                for (let i = 0; i < dataStore.today.foodLogs.length ; i++) {
+                for (let i = 0; i < dataStore.today.foodLogs.length; i++) {
                     kcal += dataStore.today.foodLogs[i].kcal;
                 }
                 dataStore.today.kcal = kcal;
@@ -218,7 +218,7 @@ async function loadLast7DaysFromBackend(userId, key) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: userId, start_time: start, end_time: end })
             }).then(res => res.json()).catch(() => []);
-            
+
             let latest_weight = 0; let latest_bmi = 0;
             if (weight.length != 0) {
                 let j = 0;
@@ -243,7 +243,7 @@ async function loadLast7DaysFromBackend(userId, key) {
             }
             dataStore.history.weight = weightData;
             dataStore.history.bmi = bmiData;
-        } 
+        }
 
         // 수면 시간 -> {hours, minutes}
         if (key === 'all' || key === 'sleep') {
@@ -410,55 +410,57 @@ export function getHistoryValueForToday(key) {
     }
 }
 
-export async function get30daysData(userId){
+export async function get30daysData(userId) {
     const stt = new Date();
     stt.setDate(stt.getDate() - 30);
     stt.setHours(0, 0, 0, 0);
     const end = new Date();
-    end.setHours(23, 59, 59, 999);   
+    end.setHours(23, 59, 59, 999);
 
     const sttDate = formatDateTime(stt);
     const endDate = formatDateTime(end);
 
+    let bodyData, sleepData, stepsData, kcalData, bpmData, weightData;
+
     try {
-        const bodyData = await fetch(`${INFO_URL}/getBodyInfo`, {
+        bodyData = await fetch(`${INFO_URL}/getBodyInfo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
 
-        const sleepData = await fetch(`${INFO_URL}/getSleep`, {
+        sleepData = await fetch(`${INFO_URL}/getSleep`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
 
-        const stepsData = await fetch(`${INFO_URL}/getSteps`, {
+        stepsData = await fetch(`${INFO_URL}/getSteps`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
 
-        const kcalData = await fetch(`${INFO_URL}/getFoodLog`, {
+        kcalData = await fetch(`${INFO_URL}/getFoodLog`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
 
-        const bpmData = await fetch(`${INFO_URL}/getHeartRate`, {
+        bpmData = await fetch(`${INFO_URL}/getHeartRate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
 
-        const weightData = await fetch(`${INFO_URL}/getWeight`, {
+        weightData = await fetch(`${INFO_URL}/getWeight`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
     } catch (err) {
         console.error('DB|last30days data load failed:', err);
-        return null
+        return null;
     }
 
     const age = bodyData.age;
