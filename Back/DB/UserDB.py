@@ -50,19 +50,35 @@ class UserDB:
         return True if status["user_password"] == pw else False
     
     def deleteAllData(self, user_id):
-        tables = ["sleep_actual", "target", "steps", "heart_rate", "food_log"]
+        # 사용자의 모든 데이터를 삭제 (계정 정보 제외)
+        tables = ["sleep_actual", "target", "steps", "heart_rate", "food_log", "weight_log"]
         
         for table in tables:
-            self.cur.execute(f"""
-                DELETE FROM {table}
-                WHERE user_id = :user_id
-                """, {"user_id": user_id})
+            try:
+                self.cur.execute(f"""
+                    DELETE FROM {table}
+                    WHERE user_id = :user_id
+                    """, {"user_id": user_id})
+            except Exception as e:
+                print(f"Error deleting from {table}: {e}")
+                # 테이블이 없거나 에러가 발생해도 계속 진행
+                continue
         
         self.connect.commit()
         self.dbManager.close()
         return True
     
     def deleteAccount(self, user_id):
+        # Body_info 테이블에서도 삭제 (User 테이블과 연결되어 있음)
+        try:
+            self.cur.execute("""
+                DELETE FROM Body_info
+                WHERE user_id = :user_id
+                """, {"user_id": user_id})
+        except Exception as e:
+            print(f"Error deleting from Body_info: {e}")
+        
+        # User 테이블에서 삭제
         self.cur.execute("""
             DELETE FROM "User"
             WHERE user_id = :user_id
