@@ -137,7 +137,7 @@ export function drawCharts() {
                         }
                     }
                 },
-                y: { title: { display: true, text: 'BMI' } }
+                y: { title: { display: true, text: 'Weight' } }
             },
             plugins: { legend: { display: false } }
         }
