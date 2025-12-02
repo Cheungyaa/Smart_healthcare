@@ -51,7 +51,7 @@ class UserDB:
     
     def deleteAllData(self, user_id):
         # 사용자의 모든 데이터를 삭제 (계정 정보 제외)
-        tables = ["sleep_actual", "target", "steps", "heart_rate", "food_log", "weight_log"]
+        tables = ["sleep_actual", "target", "steps", "heart_rate", "food_log", "weight_log", "Body_info"]
         
         for table in tables:
             try:
