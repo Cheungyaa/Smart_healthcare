@@ -7,12 +7,35 @@ class BodyInfoDB:
         self.cur = self.dbManager.getCursor()
     
     def updateBodyInfo(self, user_id, height, activity_factor, blood_pressure_sys, blood_pressure_dia): 
+        # 먼저 레코드 존재 여부 확인
         self.cur.execute("""
-            UPDATE Body_info
-            SET height = :height, activity_factor = :activity_factor, blood_pressure_systolic = :blood_pressure_sys, blood_pressure_diastolic = :blood_pressure_dia
+            SELECT * FROM Body_info
             WHERE user_id = :user_id
-            """, {"user_id": user_id, "height": height, "activity_factor": activity_factor, "blood_pressure_sys": blood_pressure_sys, "blood_pressure_dia": blood_pressure_dia}
-        )
+        """, {"user_id": user_id})
+        
+        result = self.cur.fetchone()
+        
+        print(user_id, height, activity_factor, blood_pressure_sys, blood_pressure_dia)
+        
+        if result:
+            # 존재하면 UPDATE
+            self.cur.execute("""
+                UPDATE Body_info
+                SET height = :height, 
+                    activity_factor = :activity_factor, 
+                    blood_pressure_systolic = :blood_pressure_sys, 
+                    blood_pressure_diastolic = :blood_pressure_dia
+                WHERE user_id = :user_id
+            """, {"user_id": user_id, "height": height, "activity_factor": activity_factor, 
+                "blood_pressure_sys": blood_pressure_sys, "blood_pressure_dia": blood_pressure_dia})
+        else:
+            # 없으면 INSERT (gender, age, birth는 NULL 또는 기본값)
+            self.cur.execute("""
+                INSERT INTO Body_info (user_id, height, activity_factor, 
+                                    blood_pressure_systolic, blood_pressure_diastolic)
+                VALUES (:user_id, :height, :activity_factor, :blood_pressure_sys, :blood_pressure_dia)
+            """, {"user_id": user_id, "height": height, "activity_factor": activity_factor, 
+                "blood_pressure_sys": blood_pressure_sys, "blood_pressure_dia": blood_pressure_dia})
         
         self.connect.commit()
         self.dbManager.close()
