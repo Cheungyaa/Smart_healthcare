@@ -28,9 +28,16 @@ export function renderSettingsPage(navigateTo) {
                     })
                 });
 
+                // HTTP 상태 코드 체크
+                if (!res.ok) {
+                    throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+                }
+
                 const data = await res.json();
-                if (data.message === 'fail') {
-                    throw new Error('DB Error');
+                console.log('deleteAllData response:', data);
+
+                if (!data || data.message !== 'success') {
+                    throw new Error('서버에서 데이터 삭제에 실패했습니다.');
                 }
 
                 localStorage.removeItem('todayData');
@@ -42,7 +49,7 @@ export function renderSettingsPage(navigateTo) {
 
             } catch (err) {
                 console.error('데이터 삭제 실패:', err);
-                alert('데이터 삭제에 실패했습니다.');
+                alert(`데이터 삭제에 실패했습니다.\n오류: ${err.message}`);
             }
         }
     });
@@ -58,9 +65,16 @@ export function renderSettingsPage(navigateTo) {
                     })
                 });
 
+                // HTTP 상태 코드 체크
+                if (!res.ok) {
+                    throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+                }
+
                 const data = await res.json();
-                if (data.message === 'fail') {
-                    throw new Error('DB Error');
+                console.log('deleteAccount response:', data);
+
+                if (!data || data.message !== 'success') {
+                    throw new Error('서버에서 계정 삭제에 실패했습니다.');
                 }
 
                 localStorage.removeItem('todayData');
@@ -75,7 +89,7 @@ export function renderSettingsPage(navigateTo) {
 
             } catch (err) {
                 console.error('계정 삭제 실패:', err);
-                alert('계정 삭제에 실패했습니다.');
+                alert(`계정 삭제에 실패했습니다.\n오류: ${err.message}`);
             }
         }
     });
