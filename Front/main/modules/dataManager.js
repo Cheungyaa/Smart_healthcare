@@ -409,3 +409,87 @@ export function getHistoryValueForToday(key) {
         default: return 0;
     }
 }
+
+export async function get30daysData(userId){
+    const stt = new Date();
+    stt.setDate(stt.getDate() - 30);
+    stt.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);   
+
+    const sttDate = formatDateTime(stt);
+    const endDate = formatDateTime(end);
+
+    try {
+        const bodyData = await fetch(`${INFO_URL}/getBodyInfo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
+        }).then(res => res.json());
+
+        const sleepData = await fetch(`${INFO_URL}/getSleep`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
+        }).then(res => res.json());
+
+        const stepsData = await fetch(`${INFO_URL}/getSteps`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
+        }).then(res => res.json());
+
+        const kcalData = await fetch(`${INFO_URL}/getFoodLog`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
+        }).then(res => res.json());
+
+        const bpmData = await fetch(`${INFO_URL}/getHeartRate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
+        }).then(res => res.json());
+
+        const weightData = await fetch(`${INFO_URL}/getWeight`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
+        }).then(res => res.json());
+    } catch (err) {
+        console.error('DB|last30days data load failed:', err);
+        return null
+    }
+
+    const age = bodyData.age;
+    const gender = bodyData.gender == 0 ? 'male' : 'female';
+    const height = bodyData.height;
+    const weight = [];
+    for (let i = 0; i < weightData.length; i++) {
+        weight.push({ weight: weightData[i].weight, time: weightData[i].time });
+    }
+    const sleep = [];
+    for (let i = 0; i < sleepData.length; i++) {
+        sleep.push({ start_sleep_time: sleepData[i].actual_start_time, end_sleep_time: sleepData[i].actual_end_time, sleep_time: sleepData[i].actual_sleep_time });
+    }
+    const steps = [];
+    for (let i = 0; i < stepsData.length; i++) {
+        steps.push({ steps: stepsData[i].steps, time: stepsData[i].time });
+    }
+    const kcal = [];
+    for (let i = 0; i < kcalData.length; i++) {
+        kcal.push({ food_name: kcalData[i].food_name, food_weight: kcalData[i].food_weight, time: kcalData[i].time });
+    }
+
+    const userData = {
+        age: age,
+        gender: gender,
+        height: height,
+        weight: weight,
+        sleep: sleep,
+        steps: steps,
+        kcal: kcal
+    }
+
+    return userData;
+}
