@@ -58,7 +58,7 @@ class BodyInfoDB:
             """, {"user_id": user_id})        
         result = self.cur.fetchone()
         height = result["height"]
-        bmi = weight / (height * height) if height != None else 0
+        bmi = weight / ((height/100) * (height/100)) if height != None else 0
         
         self.cur.execute("""
             SELECT * FROM weight_log
@@ -102,3 +102,12 @@ class BodyInfoDB:
         self.dbManager.close()
         return result
     
+    def updateHeight(self, user_id, height):
+        self.cur.execute("""
+            UPDATE Body_info
+            SET height = :height
+            WHERE user_id = :user_id
+        """, {"user_id": user_id, "height": height})
+        self.connect.commit()
+        self.dbManager.close()
+        return True

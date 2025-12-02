@@ -359,7 +359,7 @@ function generateDataSummaryHTML(userData) {
     summaryItems.push(`
         <div class="data-summary-item">
             <div class="data-summary-label">나이 / 성별</div>
-            <div class="data-summary-value">${age}세 / ${gender === 'male' ? '남성' : '여성'}</div>
+            <div class="data-summary-value">${age}세 / ${gender}</div>
         </div>
     `);
 

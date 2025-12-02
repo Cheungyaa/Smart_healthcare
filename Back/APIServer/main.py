@@ -1,7 +1,6 @@
 import sys
 import os
 import subprocess
-import atexit
 
 # Add project root to sys.path to allow running this script directly
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))

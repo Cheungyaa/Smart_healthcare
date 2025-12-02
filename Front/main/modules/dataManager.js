@@ -14,7 +14,10 @@ export const dataStore = {
         kcal: 0,
         bpm: 0,
         bmi: 0,
-        weight: 0,        // 오늘 몸무게
+        weight: 0,        // 몸무게
+        height: 0,        // 키
+        age: 0,           // 나이
+        gender: "",       // 성별
         foodLogs: []      // 음식: { food, weight, kcal }
     },
 
@@ -90,7 +93,8 @@ async function loadTodayDataFromBackend(userId, key) {
         const start = formatDateTime(todayStart);
         const end = formatDateTime(todayEnd);
 
-        if (key === 'all' || key === 'weight') {
+
+        if (key === 'all' || key === 'body_info') {
             const weight = await fetch(`${INFO_URL}/getWeight`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -101,6 +105,20 @@ async function loadTodayDataFromBackend(userId, key) {
             if (weight && weight.length > 0) {
                 dataStore.today.weight = weight[0].weight;
                 dataStore.today.bmi = weight[0].bmi;
+            }
+        }
+
+        if (key === 'all' || key === 'body_info') {
+            const bodyData = await fetch(`${INFO_URL}/getBodyInfo`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId})
+            }).then(res => res.json()).catch(() => []);
+
+            if (bodyData) {
+                dataStore.today.height = bodyData.height;
+                dataStore.today.age = bodyData.age;
+                dataStore.today.gender = bodyData.gender == 0 ? '남성' : '여성';
             }
         }
 
@@ -420,15 +438,9 @@ export async function get30daysData(userId) {
     const sttDate = formatDateTime(stt);
     const endDate = formatDateTime(end);
 
-    let bodyData, sleepData, stepsData, kcalData, bpmData, weightData;
+    let sleepData, stepsData, kcalData, bpmData, weightData;
 
     try {
-        bodyData = await fetch(`${INFO_URL}/getBodyInfo`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
-        }).then(res => res.json());
-
         sleepData = await fetch(`${INFO_URL}/getActualSleep`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -463,9 +475,9 @@ export async function get30daysData(userId) {
         return null;
     }
 
-    const age = bodyData.age;
-    const gender = bodyData.gender == 0 ? 'male' : 'female';
-    const height = bodyData.height;
+    const age = dataStore.today.age;
+    const gender = dataStore.today.gender;
+    const height = dataStore.today.height;
     const weight = [];
     for (let i = 0; i < weightData.length; i++) {
         weight.push({ weight: weightData[i].weight, time: weightData[i].time });

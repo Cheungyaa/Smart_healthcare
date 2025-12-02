@@ -49,6 +49,15 @@ class InfoServer:
             flag = bodyInfoDB.addWeight(user_id, weight, time)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
         
+        @app.post("/addHeight")
+        def addHeight():
+            data = request.json
+            user_id, height = (data.get("user_id"), data.get("height"))
+            
+            bodyInfoDB = BodyInfoDB()
+            flag = bodyInfoDB.updateHeight(user_id, height)
+            return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
+        
         @app.post("/getBodyInfo")
         def getBodyInfo():
             data = request.json
