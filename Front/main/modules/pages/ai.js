@@ -111,6 +111,7 @@ async function getAIAnalysis(userData) {
 1. 전반적인 건강 상태 평가
 2. 스트레스 지수 (0-100 사이의 숫자로, 숫자만 반환)
 3. 구체적인 생활습관 개선 추천 (최소 3가지)
+4. 평가할 데이터가 부족할 경우 healthStatus에 데이터가 모자르다고 알림을 반환
 
 사용자 정보:
 - 나이: ${userData.age}세
