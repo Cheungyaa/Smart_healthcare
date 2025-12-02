@@ -18,3 +18,4 @@ docker.txt
 Back/Dockerfile
 Front/Dockerfile
 Front/nginx.conf
+Front/index.html
