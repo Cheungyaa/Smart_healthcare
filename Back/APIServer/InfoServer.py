@@ -40,9 +40,11 @@ class InfoServer:
             )
             
             bodyInfoDB = BodyInfoDB()
-            flag = bodyInfoDB.addBodyInfo(user_id, height, activity_factor, blood_pressure_sys, blood_pressure_dia)
-            if flag : return jsonify({"message": "fail"})
+            flag = bodyInfoDB.updateBodyInfo(user_id, height, activity_factor, blood_pressure_sys, blood_pressure_dia)
+            print(flag)
+            if not flag : return jsonify({"message": "fail"})
             
+            bodyInfoDB = BodyInfoDB()
             time = datetime.now()
             flag = bodyInfoDB.addWeight(user_id, weight, time)
             return jsonify({"message": "success"}) if flag else jsonify({"message": "fail"})
