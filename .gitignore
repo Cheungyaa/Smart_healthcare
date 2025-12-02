@@ -11,3 +11,10 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+.dockerignore
+docker-compose.yml
+docker.txt
+Back/Dockerfile
+Front/Dockerfile
+Front/nginx.conf
