@@ -8,8 +8,9 @@ console.log("✅ Life Log Dashboard loaded.");
 document.addEventListener('DOMContentLoaded', async () => {
   // Auth Check & UI Update
   if (!localStorage.getItem("isLoggedIn")) {
-    // alert("로그인 후 이용해주세요.");
-    // window.location.href = "../log_in/login.html";
+    alert("로그인 후 이용해주세요.");
+    window.location.href = "../log_in/login.html";
+    return; // 리다이렉트 후 함수 종료
   } else {
     const username = localStorage.getItem("username") || '사용자';
     const usernameEl = document.getElementById("username");

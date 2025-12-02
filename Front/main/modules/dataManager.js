@@ -429,7 +429,7 @@ export async function get30daysData(userId) {
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
         }).then(res => res.json());
 
-        sleepData = await fetch(`${INFO_URL}/getSleep`, {
+        sleepData = await fetch(`${INFO_URL}/getActualSleep`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, start_time: sttDate, end_time: endDate })
