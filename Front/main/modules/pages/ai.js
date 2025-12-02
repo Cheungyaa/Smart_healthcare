@@ -21,7 +21,7 @@ export function renderAIPage() {
         <div class="ai-container">
             <div class="ai-header">
                 <div>
-                    <h1 class="page-title">🤖 AI Health Coach</h1>
+                    <h1 class="page-title"> AI Health Coach</h1>
                     <p class="subtext">최근 30일간의 데이터를 분석하여 맞춤형 건강 조언을 제공합니다</p>
                 </div>
                 <button id="ai-analyze-btn" class="ai-analyze-btn">분석 시작</button>
@@ -29,7 +29,7 @@ export function renderAIPage() {
 
             <div id="ai-content">
                 <div class="ai-empty-state">
-                    <div class="ai-empty-state-icon">🧠</div>
+                    <div class="ai-empty-state-icon">🤖</div>
                     <div class="ai-empty-state-text">AI 분석을 시작해보세요</div>
                     <div class="ai-empty-state-subtext">버튼을 클릭하면 최근 30일간의 건강 데이터를 분석합니다</div>
                 </div>
@@ -289,7 +289,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 데이터 요약 카드 -->
             <div class="ai-card">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">📊</span>
                     <h3 class="ai-card-title">30일 데이터 요약</h3>
                 </div>
                 <div class="ai-card-content">
@@ -300,7 +299,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 스트레스 지수 카드 -->
             <div class="ai-card">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">💆</span>
                     <h3 class="ai-card-title">스트레스 지수</h3>
                 </div>
                 <div class="ai-card-content">
@@ -324,7 +322,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 건강 상태 평가 카드 -->
             <div class="ai-card" style="grid-column: 1 / -1;">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">🏥</span>
                     <h3 class="ai-card-title">건강 상태 평가</h3>
                 </div>
                 <div class="ai-card-content">
@@ -335,7 +332,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 생활습관 추천 카드 -->
             <div class="ai-card" style="grid-column: 1 / -1;">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">✨</span>
                     <h3 class="ai-card-title">맞춤형 생활습관 추천</h3>
                 </div>
                 <div class="ai-card-content">
