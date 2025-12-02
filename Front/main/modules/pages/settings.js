@@ -10,7 +10,7 @@ export function renderSettingsPage(navigateTo) {
       <div style="padding:10px;">
         <button id="clear-data-btn" style="padding:10px 20px;background:#e74c3c;color:white;border:none;border-radius:4px;cursor:pointer;">전체 데이터 삭제</button>
       </div>
-      <div class="card-title">Delete Account</div>
+      <div class="card-title" style="margin-top: 30px;">Delete Account</div>
       <div style="padding:10px;">
         <button id="delete-account-btn" style="padding:10px 20px;background:#e74c3c;color:white;border:none;border-radius:4px;cursor:pointer;">계정 탈퇴</button>
       </div>
