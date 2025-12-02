@@ -291,7 +291,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 데이터 요약 카드 -->
             <div class="ai-card">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">📊</span>
                     <h3 class="ai-card-title">30일 데이터 요약</h3>
                 </div>
                 <div class="ai-card-content">
@@ -302,7 +301,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 스트레스 지수 카드 -->
             <div class="ai-card">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">💆</span>
                     <h3 class="ai-card-title">스트레스 지수</h3>
                 </div>
                 <div class="ai-card-content">
@@ -326,7 +324,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 건강 상태 평가 카드 -->
             <div class="ai-card" style="grid-column: 1 / -1;">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">🏥</span>
                     <h3 class="ai-card-title">건강 상태 평가</h3>
                 </div>
                 <div class="ai-card-content">
@@ -337,7 +334,6 @@ function displayAnalysisResults(analysis, userData) {
             <!-- 생활습관 추천 카드 -->
             <div class="ai-card" style="grid-column: 1 / -1;">
                 <div class="ai-card-header">
-                    <span class="ai-card-icon">✨</span>
                     <h3 class="ai-card-title">맞춤형 생활습관 추천</h3>
                 </div>
                 <div class="ai-card-content">
