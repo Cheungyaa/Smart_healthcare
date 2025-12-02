@@ -27,12 +27,6 @@ export function renderSettingsPage(navigateTo) {
                         user_id: localStorage.getItem('username'),
                     })
                 });
-
-                // HTTP 상태 코드 체크
-                if (!res.ok) {
-                    throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
-                }
-
                 const data = await res.json();
                 console.log('deleteAllData response:', data);
 
@@ -64,12 +58,6 @@ export function renderSettingsPage(navigateTo) {
                         user_id: localStorage.getItem('username'),
                     })
                 });
-
-                // HTTP 상태 코드 체크
-                if (!res.ok) {
-                    throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
-                }
-
                 const data = await res.json();
                 console.log('deleteAccount response:', data);
 
@@ -85,7 +73,7 @@ export function renderSettingsPage(navigateTo) {
 
                 dataStore.today = { sleep: { hours: 0, minutes: 0 }, steps: 0, kcal: 0, bpm: 0 };
                 alert('계정이 삭제되었습니다.');
-                navigateTo('login');
+                window.location.href = '../log_in/login.html';
 
             } catch (err) {
                 console.error('계정 삭제 실패:', err);

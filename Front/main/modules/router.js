@@ -2,7 +2,7 @@ import { isLoggedIn } from './utils.js';
 import { renderSleepPage } from './pages/sleep.js';
 import { renderActivityPage } from './pages/activity.js';
 import { renderNutritionPage } from './pages/nutrition.js';
-import { renderBodyInfoPage } from './pages/bodyInfo.js';
+import { renderBodyInfoPage } from './pages/heartRate.js';
 import { renderWeightPage } from './pages/weight.js';
 import { renderGoalPage } from './pages/goal.js';
 import { renderSettingsPage } from './pages/settings.js';

@@ -14,7 +14,7 @@ Front
                 - (pages/sleep.js) : 수면 데이터 입력 및 저장 페이지
                 - (pages/activity.js) : 걸음 수 입력 및 저장 페이지
                 - (pages/nutrition.js) : 음식 섭취 기록 입력 및 저장 페이지
-                - (pages/bodyInfo.js) : 심박수 입력 및 저장 페이지
+                - (pages/hert_rate.js) : 심박수 입력 및 저장 페이지
                 - (pages/weight.js) : 체중 입력 및 최근 7일 기록 표시 페이지
                 - (pages/goal.js) : 수면, 걸음, 칼로리, 체중 목표 설정 페이지
                 - (pages/settings.js) : 사용자 데이터 삭제 및 계정 설정 페이지

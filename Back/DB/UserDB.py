@@ -55,16 +55,16 @@ class UserDB:
         
         for table in tables:
             try:
+                print(f"Deleting from {table}...")
                 self.cur.execute(f"""
                     DELETE FROM {table}
                     WHERE user_id = :user_id
                     """, {"user_id": user_id})
+                self.connect.commit()
             except Exception as e:
                 print(f"Error deleting from {table}: {e}")
-                # 테이블이 없거나 에러가 발생해도 계속 진행
-                continue
-        
-        self.connect.commit()
+                return False
+            
         self.dbManager.close()
         return True
     
