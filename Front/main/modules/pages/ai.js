@@ -1,5 +1,6 @@
 import { INFO_URL } from '../../config.js';
 import { get30daysData } from '../dataManager.js';
+import { GPT_KEY } from '../../config.js';
 
 // AI Coach 페이지 렌더링
 export function renderAIPage() {
@@ -9,7 +10,7 @@ export function renderAIPage() {
         return `
             <div class="ai-container">
                 <div class="ai-empty-state">
-                    <div class="ai-empty-state-icon">🔒</div>
+                    <div class="ai-empty-state-icon"></div>
                     <div class="ai-empty-state-text">로그인이 필요합니다</div>
                     <div class="ai-empty-state-subtext">AI 건강 코치를 이용하려면 먼저 로그인해주세요.</div>
                 </div>
@@ -21,7 +22,7 @@ export function renderAIPage() {
         <div class="ai-container">
             <div class="ai-header">
                 <div>
-                    <h1 class="page-title">🤖 AI Health Coach</h1>
+                    <h1 class="page-title">AI Health Coach</h1>
                     <p class="subtext">최근 30일간의 데이터를 분석하여 맞춤형 건강 조언을 제공합니다</p>
                 </div>
                 <button id="ai-analyze-btn" class="ai-analyze-btn">분석 시작</button>
@@ -29,7 +30,7 @@ export function renderAIPage() {
 
             <div id="ai-content">
                 <div class="ai-empty-state">
-                    <div class="ai-empty-state-icon">🧠</div>
+                    <div class="ai-empty-state-icon">🤖</div>
                     <div class="ai-empty-state-text">AI 분석을 시작해보세요</div>
                     <div class="ai-empty-state-subtext">버튼을 클릭하면 최근 30일간의 건강 데이터를 분석합니다</div>
                 </div>
@@ -131,7 +132,7 @@ ${dataSummary}
 }
 `;
 
-    const APIKEY = ""; // 여기에 OpenAI API 키를 입력하세요
+    const APIKEY = GPT_KEY; // 여기에 OpenAI API 키를 입력하세요
 
     // API 키가 없으면 더미 데이터 반환
     if (!APIKEY) {
@@ -139,6 +140,7 @@ ${dataSummary}
         return generateDummyAnalysis(userData);
     }
 
+    
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
