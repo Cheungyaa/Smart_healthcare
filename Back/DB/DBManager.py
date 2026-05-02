@@ -16,9 +16,9 @@ class CustomCursor:
         return dict(zip([d[0].lower() for d in self._cursor.description], args))
 
 class DBManager :
-    id = "user1"
-    pw = "00000000"
-    dsn = "htaeky.iptime.org:7000/FREEPDB1"
+    id = ""
+    pw = ""
+    dsn = ""
     
     def __init__(self):
         self.connect = oracledb.connect(user = DBManager.id, password = DBManager.pw, dsn = DBManager.dsn)
